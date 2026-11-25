@@ -1,0 +1,26 @@
+SourceSweep™
+Copyright (C) 2026 Tegan Anderes / Anderes Lab Solutions
+https://github.com/anderes-lab-solutions/sourcesweep
+
+This program is free software: you can redistribute it and/or modify it under the terms of
+the GNU Affero General Public License as published by the Free Software Foundation,
+version 3 only (AGPL-3.0-only). It is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the LICENSE file for details.
+
+Network use. If you run a modified version of SourceSweep as a service that people use over
+a network (for example a hosted web app), section 13 of the AGPL requires you to offer those
+users the complete corresponding source code of your version.
+
+Additional term under AGPL section 7(b): author attribution
+  Conveyed copies and modified versions must keep this NOTICE file, and must keep the
+  attribution "built by Tegan Anderes / Anderes Lab Solutions" with a link to the URL above
+  where the program already shows it to users: the report footer, the web app sidebar and
+  the Claude skill's header comment.
+
+Names. "SourceSweep" and "Anderes Lab Solutions" are names used by the author. Under AGPL
+section 7(e), this license does not grant permission to use them to identify a product or
+service, except to state truthfully that a work is based on SourceSweep.
+
+Other licenses. Organizations that cannot use AGPL software can ask about a separate
+commercial license: https://andereslabsolutions.bio

@@ -1,0 +1,59 @@
+name: scheduled-scan
+# Runs saved profiles and commits each report to profiles/<name>/reports/<date>/, with trial-change
+# tracking in profiles/<name>/history/. Set ANTHROPIC_API_KEY (secret) for AI screening and
+# SOURCESWEEP_EMAIL (variable) as the contact address NCBI and SEC ask for.
+#
+# In a PUBLIC repo the workflow commits reports without publisher abstracts and leaves out the
+# source packs (sources.md / sources.json), since abstracts belong to their publishers.
+# In a PRIVATE repo it commits everything.
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Profile folder in profiles/, or 'due' for every profile whose cadence_days have passed"
+        default: "due"
+        required: true
+      days:
+        description: "Lookback days (blank = the profile's days)"
+        default: ""
+  # Off by default. Uncomment to check weekly; each profile runs only when its cadence_days have passed.
+  # schedule:
+  #   - cron: "17 14 * * 1"
+
+concurrency: { group: scheduled-scan, cancel-in-progress: false }
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      SOURCESWEEP_EMAIL: ${{ vars.SOURCESWEEP_EMAIL }}
+      PUBLIC_REPO: ${{ github.event.repository.private == false }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install .
+      - name: Run
+        env:
+          PROFILE: ${{ github.event.inputs.profile || 'due' }}
+          DAYS: ${{ github.event.inputs.days }}
+        run: |
+          FLAGS=""
+          if [ "$PUBLIC_REPO" = "true" ]; then FLAGS="--no-abstracts"; fi
+          if [ "$PROFILE" = "due" ]; then
+            sourcesweep due $FLAGS
+          else
+            sourcesweep run "profiles/$PROFILE" ${DAYS:+--days "$DAYS"} $FLAGS
+          fi
+      - name: Commit reports and history
+        run: |
+          if [ "$PUBLIC_REPO" = "true" ]; then
+            find profiles -path '*/reports/*' \( -name sources.md -o -name sources.json -o -name index.md \) -delete
+          fi
+          git config user.name "sourcesweep"
+          git config user.email "actions@users.noreply.github.com"
+          git add profiles/*/reports profiles/*/history 2>/dev/null || true
+          git commit -m "Scan ${{ github.event.inputs.profile || 'due' }} $(date +%F)" || echo "nothing to commit"
+          git push

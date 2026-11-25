@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "SourceSweep"
+abstract: "Cited competitive landscape scans for biotech search keywords: US and EU clinical trials, PubMed, preprints, SEC filings, trade press and news, screened for relevance into a briefing where every claim cites its source."
+type: software
+authors:
+  - family-names: "Anderes"
+    given-names: "Tegan"
+    affiliation: "Anderes Lab Solutions"
+version: "1.0.0"
+date-released: "2026-11-24"
+license: AGPL-3.0-only
+repository-code: "https://github.com/anderes-lab-solutions/sourcesweep"
+url: "https://anderes-lab-solutions.github.io/sourcesweep/"
+keywords:
+  - biotech
+  - competitive intelligence
+  - clinical trials
+  - landscape analysis
+  - Claude

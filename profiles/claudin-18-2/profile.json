@@ -1,0 +1,8 @@
+{
+  "name": "Claudin 18.2 (example)",
+  "keywords": ["CLDN18.2", "claudin 18.2", "claudin-18.2", "claudin18.2", "CLDN18"],
+  "days": 60,
+  "cadence_days": 14,
+  "context": "Example profile. Reader is a biotech business-development analyst following the Claudin 18.2 field: antibodies, bispecifics, antibody-drug conjugates and cell therapies targeting Claudin 18.2 in gastric, gastroesophageal junction and pancreatic cancer; their trials, data readouts, deals and company moves; and Claudin 18.2 as a biomarker (IHC testing, expression cutoffs, companion diagnostics).",
+  "restrict": {}
+}
