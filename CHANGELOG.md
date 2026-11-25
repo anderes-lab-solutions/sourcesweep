@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Screening cache for tracked profiles: sources are always fetched fresh, but AI relevance scores are reused for sources whose text hasn't changed, under unchanged keywords and scope (`history/screening_cache.json`). Only new or changed sources go to the API.
+- Quiet runs: when nothing new is relevant and no tracked trial changed, the briefing call is skipped and the report says "No material changes since the last scan".
+- `run.json` records `screening_reused` and `briefing_skipped`.
 - Update briefings lead with "Changes since last scan", above the state of the field.
 - Briefings report and attribute what sources say, with no added interpretation, predictions or recommendations.
 - Report tables: only date and ID columns stay on one line; the last column (e.g. "What happened") now wraps.

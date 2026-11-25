@@ -149,3 +149,36 @@ def test_report_has_watermark(tmp_path):
     write_pack(tmp_path)
     html = scanner.render(tmp_path).read_text()
     assert "Made with <b>SourceSweep" in html and scanner.REPO_URL in html and "__REPO__" not in html
+
+
+def test_screening_cache_and_quiet_run(tmp_path, monkeypatch):
+    """Second run reuses AI scores for unchanged sources and skips the briefing when nothing new is relevant."""
+    calls = {"screened": [], "briefings": 0}
+
+    def fake_scan(cfg, days, out, log=None):
+        write_pack(Path(out))
+        return {"out": str(out), "window": ["2026-09-25", "2026-11-24"], "status": {"trials": "ok (2)"}, "total": 4}
+
+    def fake_screen(cfg, its, usage, progress=None, use_ai=True):
+        calls["screened"].append(len(its))
+        return {i["sid"]: {"rel": 3 if "TGT1" in i["title"] or "Target one" in i["title"] else 0,
+                           "note": "n", "by": "ai"} for i in its}
+
+    def fake_narrative(*a, **k):
+        calls["briefings"] += 1
+        return "## State of the field\nText [S1]."
+
+    monkeypatch.setattr(scanner, "scan", fake_scan)
+    monkeypatch.setattr(screen, "available", lambda: True)
+    monkeypatch.setattr(screen, "screen", fake_screen)
+    monkeypatch.setattr(screen, "narrative", fake_narrative)
+    run = lambda n, cfg=CFG: pipeline.run(dict(cfg), tmp_path / n, history_dir=tmp_path / "hist", progress=lambda m: None)
+
+    first = run("r1")
+    assert calls["screened"] == [4] and calls["briefings"] == 1 and first["screening_reused"] == 0
+    second = run("r2")
+    assert calls["screened"][-1] == 0 and second["screening_reused"] == 4
+    assert second["briefing_skipped"] and calls["briefings"] == 1
+    assert "No material changes" in (tmp_path / "r2" / "briefing.md").read_text()
+    changed = run("r3", {**CFG, "context": "A different scope."})  # new scope: everything screened again
+    assert calls["screened"][-1] == 4 and changed["screening_reused"] == 0
