@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.0 (unreleased)
+## 1.3.0 (2026-11-25)
 
 Accuracy and coverage, from a line-by-line review of a client briefing against its sources:
 - Screening reads the parts of each abstract that matter (sentences naming a keyword, plus results and conclusions) instead of the first 600 characters. Anything scored tangential or off-topic whose text names a keyword is screened again with the whole abstract.
