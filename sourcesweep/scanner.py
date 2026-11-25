@@ -18,7 +18,7 @@ from email.utils import parsedate_to_datetime
 import os
 from pathlib import Path
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 UA_NAME = "sourcesweep"
 REPO_URL = "https://github.com/anderes-lab-solutions/sourcesweep"
 

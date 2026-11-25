@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 (2026-11-24)
 
 - Screening cache for tracked profiles: sources are always fetched fresh, but AI relevance scores are reused for sources whose text hasn't changed, under unchanged keywords and scope (`history/screening_cache.json`). Only new or changed sources go to the API.
 - Quiet runs: when nothing new is relevant and no tracked trial changed, the briefing call is skipped and the report says "No material changes since the last scan".

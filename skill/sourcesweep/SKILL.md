@@ -5,7 +5,7 @@ description: "Run a SourceSweep competitive landscape scan (also called a landsc
 
 # SourceSweep™: competitive landscape scan
 
-<!-- Built from https://github.com/anderes-lab-solutions/sourcesweep (v1.0.1). Copyright 2026 Tegan Anderes / Anderes Lab Solutions. GNU AGPL-3.0-only; keep this attribution (see NOTICE). Edit skill/SKILL.template.md and sourcesweep/scanner.py, then run tools/build_skill.py. -->
+<!-- Built from https://github.com/anderes-lab-solutions/sourcesweep (v1.1.0). Copyright 2026 Tegan Anderes / Anderes Lab Solutions. GNU AGPL-3.0-only; keep this attribution (see NOTICE). Edit skill/SKILL.template.md and sourcesweep/scanner.py, then run tools/build_skill.py. -->
 
 Targeted pre-scrape for any set of search keywords. A bundled script searches seven public sources
 over a lookback window (default 60 days). You then screen every source for relevance, write a
@@ -200,7 +200,7 @@ from email.utils import parsedate_to_datetime
 import os
 from pathlib import Path
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 UA_NAME = "sourcesweep"
 REPO_URL = "https://github.com/anderes-lab-solutions/sourcesweep"
 
