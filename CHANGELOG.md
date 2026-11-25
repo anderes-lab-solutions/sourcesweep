@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.1 (2026-11-25)
+
+- Link check: DOI links (most preprints) are checked at doi.org without following the redirect, since preprint and publisher sites often block automated visits; SEC links use the "name email" User-Agent the SEC asks for. On the KLA year review this verified all 94 links that 1.3.0 could not check.
+- Reports no longer list "Relevant sources not cited above"; every relevant source is still in the source list. The skill now checks its uncited relevant sources itself before publishing.
+
 ## 1.3.0 (2026-11-25)
 
 Accuracy and coverage, from a line-by-line review of a client briefing against its sources:

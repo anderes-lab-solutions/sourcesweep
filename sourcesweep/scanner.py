@@ -18,7 +18,7 @@ from email.utils import parsedate_to_datetime
 import os
 from pathlib import Path
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 UA_NAME = "sourcesweep"
 REPO_URL = "https://github.com/anderes-lab-solutions/sourcesweep"
 
@@ -59,11 +59,31 @@ def get(url, params=None, data=None, timeout=60, json_body=None, ua=f"{UA_NAME}/
             time.sleep(3 * (attempt + 1))
 
 
-def check_link(url, ua, timeout=12):
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k):
+        return None
+
+
+def check_link(url, ua, timeout=12, contact_ua=""):
     """'ok' if the source's link opens, 'broken' if the site says it is gone (404/410), else 'unchecked'
-    (the site blocked the check, timed out or needs a sign-in: that says nothing about the source)."""
+    (the site blocked the check, timed out or needs a sign-in: that says nothing about the source).
+    DOI links are checked at doi.org without following the redirect, because publisher and preprint sites
+    often block automated visits: a registered DOI answers with a redirect, an unknown one with 404.
+    SEC links are sent with the "name email" User-Agent the SEC asks automated clients to use."""
     if not str(url).startswith("https://"):
         return "unchecked"
+    host = urllib.parse.urlparse(url).netloc.lower()
+    if host in ("doi.org", "dx.doi.org"):
+        req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": ua})
+        try:
+            urllib.request.build_opener(_NoRedirect).open(req, timeout=timeout)
+            return "ok"
+        except urllib.error.HTTPError as e:
+            return "ok" if e.code in (301, 302, 303, 307, 308) else "broken" if e.code in (404, 410) else "unchecked"
+        except Exception:
+            return "unchecked"
+    if host.endswith("sec.gov") and contact_ua:
+        ua = contact_ua
     for method in ("HEAD", "GET"):
         req = urllib.request.Request(url, method=method, headers={"User-Agent": ua, "Accept": "*/*"})
         try:
@@ -85,9 +105,10 @@ def verify_links(items, cfg=None, log=None, workers=16):
     """Open every source's link once and record the result on the item as item["link"]. Returns the counts."""
     from concurrent.futures import ThreadPoolExecutor
     ua = f"{UA_NAME}/{__version__} ({REPO_URL}; {contact(cfg or {})})"
+    contact_ua = f"{UA_NAME} {contact(cfg or {})}"
     urls = sorted({i["url"] for i in items if i.get("url")})
     with ThreadPoolExecutor(max_workers=workers) as ex:
-        res = dict(zip(urls, ex.map(lambda u: check_link(u, ua), urls)))
+        res = dict(zip(urls, ex.map(lambda u: check_link(u, ua, contact_ua=contact_ua), urls)))
     for i in items:
         i["link"] = res.get(i.get("url"), "unchecked")
     counts = {k: sum(1 for i in items if i["link"] == k) for k in ("ok", "broken", "unchecked")}
@@ -671,7 +692,6 @@ def render(out, hub="", title="", abstracts=True, heading=""):
     page = REPORT_HTML.replace("<title>__TITLE__ report</title>", "<title>" + md_inline(title or cfg.get("name", "Landscape scan") + " report") + "</title>")
     page = page.replace("__TITLE__", md_inline(heading or cfg.get("name", "Landscape scan")))
     page = page.replace("__REPO__", REPO_URL).replace("__VERSION__", __version__)
-    brief = add_not_cited(brief, items, scr)
     tables = []
     brief_html = md_to_html(brief, {i["sid"]: i["url"] for i in items}, tables) if brief else "<p class=quiet>No briefing was written for this scan.</p>"
     payload["tables"] = tables

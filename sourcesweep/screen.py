@@ -327,15 +327,6 @@ def briefing(cfg, items, scr, status, window, story="", changes_md=""):
         L += [changes_md, ""]
     if story:
         L += [story, ""]
-    if story and "No material changes since the last scan" not in story:
-        missed = not_cited(story, items, scr)
-        if missed:
-            L += ["## Relevant sources not cited above",
-                  f"{len(missed)} sources were screened as relevant but the briefing does not cite them. They are in the "
-                  "source list below; check them before relying on the briefing alone.", ""]
-            L += [f"- [{i['sid']}] {i['title'][:110]}" + (f": {scr[i['sid']]['note']}" if scr[i['sid']].get("note") else "")
-                  for i in sorted(missed, key=lambda i: (-scr[i["sid"]]["rel"], int(i["sid"][1:])))]
-            L += [""]
     L += ["## Screened sources", "| ID | Type | Rel. | Matched | Title | Note |", "|---|---|---|---|---|---|"]
     num = lambda s: int(s[1:])
     by_sid = {i["sid"]: i for i in items}

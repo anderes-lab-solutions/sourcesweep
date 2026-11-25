@@ -265,12 +265,6 @@ def test_commentary_linked_to_primary(tmp_path):
     assert f"Commentary or editorial on [{primary['sid']}]" in (tmp_path / "sources.md").read_text()
 
 
-def test_briefing_lists_relevant_sources_not_cited(tmp_path):
-    its = write_pack(tmp_path)
-    scr = {i["sid"]: {"rel": 3 if n < 3 else 0, "note": "n", "by": "ai"} for n, i in enumerate(its)}
-    md = screen.briefing(dict(CFG), its, scr, {"trials": "ok (2)"}, ["2026-09-25", "2026-11-24"], "## State of the field\nText [S1].")
-    assert "## Relevant sources not cited above" in md and "- [S2]" in md and "- [S1]" not in md.split("not cited above")[1].split("## Screened")[0]
-
 
 def test_citation_check_and_low_score_recheck(tmp_path, monkeypatch):
     its = write_pack(tmp_path)
@@ -294,9 +288,39 @@ def test_citation_check_and_low_score_recheck(tmp_path, monkeypatch):
     assert seen == [False, True] and out["S3"]["rel"] == 2 and out["S4"]["rel"] == 0
 
 
-def test_report_adds_not_cited_list_for_hand_written_briefings(tmp_path):
+
+def test_link_check_doi_and_sec(monkeypatch):
+    import urllib.error
+    seen = {}
+
+    class Opener:
+        def open(self, req, timeout=None):
+            code = 302 if "real" in req.full_url else 404
+            raise urllib.error.HTTPError(req.full_url, code, "x", {}, None)
+
+    monkeypatch.setattr(scanner.urllib.request, "build_opener", lambda *a: Opener())
+
+    def fake_open(req, timeout=None):
+        seen["ua"] = req.get_header("User-agent")
+        if " " not in seen["ua"] or "(" in seen["ua"]:
+            raise urllib.error.HTTPError(req.full_url, 403, "Forbidden", {}, None)
+        class R:
+            def __enter__(s): return s
+            def __exit__(s, *a): return False
+            def read(s, n=-1): return b"x"
+        return R()
+    monkeypatch.setattr(scanner.urllib.request, "urlopen", fake_open)
+    assert scanner.check_link("https://doi.org/10.1/real", "ua") == "ok"
+    assert scanner.check_link("https://doi.org/10.1/missing", "ua") == "broken"
+    assert scanner.check_link("https://www.sec.gov/Archives/x.htm", "sourcesweep/1 (repo; a@b.c)", contact_ua="sourcesweep a@b.c") == "ok"
+    assert seen["ua"] == "sourcesweep a@b.c"
+
+
+
+def test_reports_do_not_list_uncited_sources(tmp_path):
     its = write_pack(tmp_path)
-    (tmp_path / "screening.json").write_text(json.dumps({i["sid"]: {"rel": 3, "note": "n"} for i in its}))
-    (tmp_path / "briefing.md").write_text("# T\n\n## State of the field\nText [S1].\n\n## Screened sources\n| ID |\n")
-    html = scanner.render(tmp_path).read_text()
-    assert "Relevant sources not cited above" in html and "S4" in html.split("Relevant sources not cited above")[1][:4000]
+    scr = {i["sid"]: {"rel": 3, "note": "n", "by": "ai"} for i in its}
+    md = screen.briefing(dict(CFG), its, scr, {"trials": "ok (2)"}, ["2026-09-25", "2026-11-24"], "## State of the field\nText [S1].")
+    (tmp_path / "briefing.md").write_text(md)
+    (tmp_path / "screening.json").write_text(json.dumps(scr))
+    assert "not cited above" not in md and "not cited above" not in scanner.render(tmp_path).read_text()

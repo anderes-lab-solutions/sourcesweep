@@ -152,8 +152,7 @@ Rules for every claim:
 
 **Check before publishing.** Re-read the full text (`show`) of every source the briefing cites and correct any claim
 that is unsupported, drops a stated qualifier, rests a general claim on one source, or merges different things.
-The report adds a "Relevant sources not cited above" list for relevant sources the briefing doesn't cite; after
-`render`, skim it for anything that belongs in the briefing.
+Then list the sources you scored 2 or 3 but did not cite, and add any that belong in the briefing.
 
 Create `briefing.md` in `$OUT`:
 
