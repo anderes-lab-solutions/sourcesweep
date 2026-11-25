@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- New report design: navy header with the SourceSweep mark, profile keywords, window and schedule, and a source status line ("All 7 sources verified", or which source wasn't reached with a link to check it directly). A page menu on the left, figure cards, source mix, then the briefing and source list.
+- "Ask Claude about these sources": downloads the report's source pack, opens a new Claude chat with a starter prompt (also copied to the clipboard).
+- Table export buttons sit beside the table's heading ("Download table (CSV)", "Copy table"); Print / PDF button.
+- Web app: matching palette, logo and type.
+
 ## 1.1.0 (2026-11-24)
 
 - Screening cache for tracked profiles: sources are always fetched fresh, but AI relevance scores are reused for sources whose text hasn't changed, under unchanged keywords and scope (`history/screening_cache.json`). Only new or changed sources go to the API.

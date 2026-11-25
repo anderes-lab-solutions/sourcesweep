@@ -34,18 +34,27 @@ from .scanner import REPO_URL
 MAX_RUNS_PER_SESSION = 10
 REPORT_FILES = ("report.html", "briefing.md", "sources.md", "sources.json", "screening.json")
 
+LOGO = ('<svg aria-hidden="true" width="34" height="34" viewBox="0 0 26 26" fill="none" stroke="#1F4FD8" stroke-width="2" '
+        'stroke-linecap="round"><path d="M11 11 L11 3.5 A7.5 7.5 0 0 1 17.5 7.25 Z" fill="#1F4FD8" fill-opacity=".25" stroke="none"></path>'
+        '<circle cx="11" cy="11" r="7.5"></circle><path d="M11 11 L11 4.5"></path><circle cx="11" cy="11" r="1.2" fill="#1F4FD8" stroke="none">'
+        '</circle><path d="M16.6 16.6 L23 23" stroke-width="2.6"></path></svg>')
+
 CSS = """
 <style>
-.block-container{padding-top:2.2rem;max-width:1200px}
-.ss-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:2px}
-.ss-head h1{font-size:2.1rem;font-weight:300;letter-spacing:-.02em;margin:0;padding:0}
-.ss-tag{color:#6b5a73;font-size:.95rem}
-.ss-label{text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;color:#8a7891;margin:0 0 4px}
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap');
+.block-container{padding-top:2rem;max-width:1360px}
+.ss-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.ss-head h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:600;letter-spacing:-.01em;margin:0;padding:0;color:#0F172A}
+.ss-tag{color:#4B5563;font-size:.95rem}
+.ss-label{text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;color:#4B5563;margin:0 0 4px}
 .ss-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
-.ss-chips span{border:1px solid #e2d6e6;background:#faf6fb;border-radius:999px;padding:1px 10px;font-size:.8rem;color:#4a3654}
-.ss-muted{color:#7a6a82;font-size:.85rem;margin:0}
-.ss-ctx{color:#4a3d50;font-size:.88rem;margin:4px 0 6px}
-.ss-new{display:inline-block;background:#ffe3ea;color:#a3214a;border-radius:6px;padding:0 6px;font-size:.75rem;margin-left:6px}
+.ss-chips span{background:#EEF2FF;color:#3730A3;border-radius:999px;padding:2px 10px;font-size:.8rem}
+.ss-muted{color:#4B5563;font-size:.85rem;margin:0}
+.ss-ctx{color:#374151;font-size:.88rem;margin:4px 0 6px}
+.ss-new{display:inline-block;background:#DBEAFE;color:#1E40AF;border-radius:6px;padding:0 6px;font-size:.75rem;margin-left:6px}
+h3,h4{font-family:'Space Grotesk',sans-serif!important;letter-spacing:-.01em}
+[data-testid="stMetric"]{border:1px solid #E5E7EB;border-radius:10px;padding:10px 14px;background:#fff}
+[data-testid="stMetricValue"]{font-family:'Space Grotesk',sans-serif}
 </style>
 """
 
@@ -355,7 +364,7 @@ def main(profiles_dir=None, title="SourceSweep™", subtitle="Cited competitive 
     root = Path(profiles_dir or os.environ.get("SOURCESWEEP_PROFILES") or "profiles").resolve()
 
     st.markdown(CSS, unsafe_allow_html=True)
-    st.markdown(f"<div class='ss-head'><h1>{html.escape(title)}</h1><span class='ss-tag'>{html.escape(subtitle)}</span></div>",
+    st.markdown(f"<div class='ss-head'>{LOGO}<h1>{html.escape(title)}</h1><span class='ss-tag'>{html.escape(subtitle)}</span></div>",
                 unsafe_allow_html=True)
 
     with st.sidebar:

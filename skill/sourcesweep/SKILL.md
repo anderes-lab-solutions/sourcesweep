@@ -615,8 +615,8 @@ def md_to_html(md, urls=None, tables=None):
             if tables is not None:
                 tables.append(table_csv_rows(head, body, urls or {}))
                 n = len(tables) - 1
-                html.append(f'<div class="tbar"><button type="button" class="tbtn" data-csv="{n}">Download CSV</button>'
-                            f'<button type="button" class="tbtn" data-copycsv="{n}">Copy CSV</button></div>')
+                html.append(f'<div class="tbar"><button type="button" class="tbtn" data-csv="{n}">Download table (CSV)</button>'
+                            f'<button type="button" class="tbtn" data-copycsv="{n}">Copy table</button></div>')
             html.append('<div class="scroll"><table class="stack"><thead><tr>' + "".join(f"<th>{md_inline(h)}</th>" for h in head) +
                         "</tr></thead><tbody>" + "".join("<tr>" + "".join(
                             f'<td data-l="{md_inline(head[n]) if n < len(head) else ""}"{_nw(head, n)}>{md_inline(c)}</td>' for n, c in enumerate(r)) + "</tr>" for r in body) +
@@ -759,7 +759,8 @@ def render(out, hub="", title="", abstracts=True):
                "keywords": cfg["keywords"], "hub": hub if hub.startswith("https://") else "", "rows": rows,
                "screened": bool(scr), "generated": date.today().isoformat(), "repo": REPO_URL,
                "ran_at": data.get("generated_at") or datetime.fromtimestamp((out / "sources.json").stat().st_mtime, timezone.utc).isoformat(timespec="seconds"),
-               "days": (date.fromisoformat(data["window"][1]) - date.fromisoformat(data["window"][0])).days}
+               "days": (date.fromisoformat(data["window"][1]) - date.fromisoformat(data["window"][0])).days,
+               "lookback": cfg.get("days"), "cadence": cfg.get("cadence_days")}
     page = REPORT_HTML.replace("<title>__TITLE__ report</title>", "<title>" + md_inline(title or cfg.get("name", "Landscape scan") + " report") + "</title>")
     page = page.replace("__TITLE__", md_inline(cfg.get("name", "Landscape scan")))
     page = page.replace("__REPO__", REPO_URL).replace("__VERSION__", __version__)
@@ -778,119 +779,155 @@ REPORT_HTML = r"""<!DOCTYPE html>
 <meta name="generator" content="SourceSweep __VERSION__ (__REPO__)">
 <title>__TITLE__ report</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
 <style>
-/* VOICE work: an analyst's desk brief, dense and calm
-   IDEA a night-desk wire monitor: findings up top, every source one row on the tape
-   PICTURE the source tape: one stacked bar per source type, coloured by relevance
-   COLOUR plum-black ground, white ink, rose for directly relevant, dusk for context
-   TYPE Inter Tight 300 large titles + Inter text
-   LAYOUT title and key figures, tape full width, briefing, then filterable source list */
-:root{color-scheme:dark;--bg:#1a0f1f;--panel:#24162b;--line:#3a2843;--ink:#f6f0f7;--mute:#bfaec6;--rose:#ff8fa3;--dusk:#8f7aa8;--faint:#4a3654}
+/* Clean intelligence report: navy header band, white page, one blue accent.
+   Header: brand, actions, title, window, profile keywords, source status.
+   Body: page menu on the left, then figures, source mix, briefing and the filterable source list. */
+:root{color-scheme:light;--bg:#fff;--soft:#F6F7F9;--ink:#111827;--mute:#4B5563;--line:#E5E7EB;--faint:#F1F5F9;--accent:#1F4FD8;--navy:#0F172A;--sky:#7DD3FC}
 *{box-sizing:border-box;min-width:0}
 html,body{margin:0;background:var(--bg);color:var(--ink)}
-body{font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
-a{color:var(--rose)}
-.band{padding:clamp(24px,4vw,56px) max(5vw,16px)}
-.wrap{max-width:1240px;margin:0 auto}
-h1{font:300 clamp(32px,5vw,52px)/1.05 "Inter Tight",Inter,sans-serif;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
-h2,h3{font:600 22px/1.2 "Inter Tight",Inter,sans-serif;margin:28px 0 10px}
+body{font:16px/1.6 Inter,system-ui,sans-serif;overflow-x:clip}
+a{color:var(--accent)}
+.disp{font-family:"Space Grotesk",Inter,sans-serif}
+.wrap{max-width:1360px;margin:0 auto;padding:0 28px}
+.top{background:var(--navy);color:#E2E8F0;padding:24px 0 28px}
+.bar1{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.brand{display:inline-flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font:600 24px/1 "Space Grotesk",Inter,sans-serif;letter-spacing:-.01em}
+.brand:hover,.brand:focus-visible{color:var(--sky);outline:none}
+.hbtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hbtn{font:500 14px Inter,sans-serif;min-height:40px;padding:0 14px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.hbtn:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.ask{border:1px solid var(--sky);background:#0B2540;color:#E0F2FE}
+.ask:hover{background:#12355C}
+.pr{border:0;background:#fff;color:var(--navy);font-weight:600}
+.askwrap{position:relative}
+.tip{position:absolute;right:0;top:48px;width:300px;background:#fff;color:var(--ink);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;box-shadow:0 8px 24px rgba(15,23,42,.25);z-index:4;opacity:0;visibility:hidden;transition:opacity .15s}
+.askwrap:hover .tip,.askwrap:focus-within .tip{opacity:1;visibility:visible}
+h1{font:600 clamp(30px,4vw,40px)/1.1 "Space Grotesk",Inter,sans-serif;letter-spacing:-.01em;margin:0 0 10px;color:#fff;text-wrap:balance}
+.sub{color:#CBD5E1;margin:0;font-size:14px}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:14px 0 0}
+.lbl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#94A3B8;margin-right:4px}
+.kw{display:contents;list-style:none}
+.kw li{font-size:12px;background:#1E293B;color:#E0F2FE;border:1px solid #334155;border-radius:999px;padding:3px 10px}
+.status{margin:12px 0 0;font-size:14px;color:#86EFAC}
+.status.bad{color:#FCA5A5;font-weight:500}
+.status.bad a{color:#FCA5A5}
+.layout{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;padding-top:28px;padding-bottom:56px}
+.toc{flex:0 1 168px;max-width:168px;margin-left:-10px;position:sticky;top:16px;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.toc .lbl{color:var(--mute);padding:0 10px 8px}
+.toc a{padding:7px 10px;border-radius:6px;color:#374151;text-decoration:none}
+.toc a:hover,.toc a:focus-visible{background:#EFF6FF;color:var(--accent);outline:none}
+.main{flex:999 1 640px;max-width:1080px;display:flex;flex-direction:column;gap:36px}
+h2,h3{font:600 22px/1.25 "Space Grotesk",Inter,sans-serif;margin:0 0 12px;scroll-margin-top:16px}
 h4{font:600 17px/1.3 Inter,sans-serif;margin:20px 0 6px}
-.sub{color:var(--mute);margin:0}
-.kw{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 0;padding:0;list-style:none}
-.kw li{border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:13px;color:var(--mute)}
-.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(9em,1fr));gap:12px;margin:26px 0 8px}
-.fig b{display:block;font:300 clamp(30px,4vw,44px)/1 "Inter Tight",sans-serif}
-.fig span{color:var(--mute);font-size:14px}
-.tape{margin-top:22px;display:grid;gap:8px}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(10em,1fr));gap:12px}
+.fig{border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.fig span{font-size:12px;color:var(--mute)}
+.fig b{display:block;font:600 28px/1.2 "Space Grotesk",Inter,sans-serif}
+.card{border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.tape{display:grid;gap:8px}
 .tr{display:grid;grid-template-columns:7.5em minmax(0,1fr) 3em;gap:12px;align-items:center;font-size:14px}
-.tr button{all:unset;cursor:pointer;color:var(--mute);border-radius:4px}
-.tr button:hover,.tr button:focus-visible{color:var(--ink);outline:2px solid var(--dusk);outline-offset:2px}
-.bar{display:flex;height:18px;border-radius:3px;overflow:hidden;background:var(--faint)}
+.tr button{all:unset;cursor:pointer;color:#374151;border-radius:4px}
+.tr button:hover,.tr button:focus-visible{color:var(--accent);outline:2px solid #BFDBFE;outline-offset:2px}
+.bar{display:flex;height:12px;border-radius:4px;overflow:hidden;background:var(--faint)}
 .bar i{display:block;height:100%}
-.r3{background:var(--rose)}.r2{background:var(--dusk)}.r1{background:#6b5577}.r0{background:var(--faint)}
-.tr .c{text-align:right;font-variant-numeric:tabular-nums}
+.r3{background:var(--accent)}.r2{background:#93C5FD}.r1{background:#CBD5E1}.r0{background:#E5E7EB}
+.tr .c{text-align:right;font-variant-numeric:tabular-nums;color:var(--mute)}
 .key{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:13px;color:var(--mute)}
 .key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
-.light{background:#fff;color:#1a0f1f;--ink:#1a0f1f;--mute:#5e4f66;--line:#e4dbe8;--faint:#d6cadb;--dusk:#8f7aa8;color-scheme:light}
-.light a{color:#b8325a}
-.brief{border-top:1px solid var(--line)}
-.brief .wrap{max-width:1040px}
-.brief p,.brief li{color:var(--ink);max-width:72ch}
-.brief table{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0 10px}
-.brief th{text-align:left;font-weight:600;color:var(--mute);font-size:13px;border-bottom:2px solid var(--ink);padding:8px 10px 6px;vertical-align:bottom}
-.brief td{border-bottom:1px solid var(--line);padding:10px;vertical-align:top}
+.brief{display:flex;flex-direction:column}
+.brief h3{margin-top:28px}.brief h3:first-child{margin-top:0}
+.brief p,.brief li{max-width:72ch}
+.brief table{width:100%;border-collapse:collapse;font-size:14px}
+.brief th{text-align:left;font-weight:500;color:var(--mute);font-size:12px;background:#F9FAFB;padding:10px 12px;vertical-align:bottom}
+.brief td{border-top:1px solid var(--faint);padding:11px 12px;vertical-align:top}
 .brief td:first-child{font-weight:600}
-.brief td.nw{white-space:nowrap}
-.scroll{overflow-x:auto}
-.tbar{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 8px}
-.tbtn{font:500 14px Inter,sans-serif;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:6px;min-height:36px;padding:0 12px;cursor:pointer}
+.brief td.nw{white-space:nowrap;color:var(--mute)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin:4px 0 10px}
+.hrow{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:28px 0 12px}
+.hrow h3{margin:0!important}
+.tbar{display:flex;flex-wrap:wrap;gap:8px}
+.tbtn{font:500 14px Inter,sans-serif;color:var(--ink);background:#fff;border:1px solid #D1D5DB;border-radius:8px;min-height:40px;padding:0 14px;cursor:pointer}
 .tbtn:hover{border-color:var(--mute)}
-.tbtn:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#1a0f1f;color:#fff;padding:10px 16px;border-radius:8px;font:500 15px Inter,sans-serif;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px);z-index:5}
+.tbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:8px;font:500 15px Inter,sans-serif;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px);z-index:5}
 .toast.on{opacity:1}
 .brief li{margin:6px 0}
 .cites{white-space:nowrap}
-.cite{display:inline-block;font-size:12px;font-weight:600;text-decoration:none;color:#1a0f1f;background:var(--rose);border-radius:4px;padding:0 5px;margin-left:3px;line-height:18px}
-.cite:hover,.cite:focus-visible{background:#1a0f1f;color:#fff;outline:none}
-.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 18px}
-.tools input{flex:1 1 220px;font:16px Inter,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;min-height:44px}
-.tools input:focus-visible,.chip:focus-visible,select:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+.cite{display:inline-block;font-size:12px;font-weight:600;text-decoration:none;color:#1E40AF;background:#DBEAFE;border-radius:4px;padding:0 5px;margin-left:3px;line-height:18px}
+.cite:hover,.cite:focus-visible{background:var(--accent);color:#fff;outline:none}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
+.tools input{flex:1 1 240px;font:15px Inter,sans-serif;color:var(--ink);background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:10px 12px;min-height:44px}
+.tools input:focus-visible,.chip:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font:500 14px Inter,sans-serif;color:var(--mute);background:transparent;border:1px solid var(--line);border-radius:999px;padding:8px 14px;min-height:40px;cursor:pointer}
-.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-select{font:15px Inter,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 10px;min-height:44px}
-.count{color:var(--mute);font-size:14px;margin:0 0 10px}
-.src{border-top:1px solid var(--line);padding:14px 0;display:grid;grid-template-columns:9em minmax(0,1fr);gap:4px 14px;scroll-margin-top:20px}
-.src:target{background:linear-gradient(90deg,#ff8fa322,transparent)}
-.sid{font:600 14px Inter,sans-serif;color:var(--mute)}
-.sid em{display:block;font-style:normal;font-weight:500;font-size:12px;margin-top:4px;padding:1px 6px;border-radius:3px;width:max-content}
-.t{font-weight:600;font-size:16px;text-decoration:none;color:var(--ink)}
-.t:hover,.t:focus-visible{color:var(--rose);text-decoration:underline}
+.chip{font:500 13px Inter,sans-serif;color:#374151;background:#fff;border:1px solid #D1D5DB;border-radius:999px;padding:8px 14px;min-height:40px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
+select{font:15px Inter,sans-serif;color:var(--ink);background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:9px 10px;min-height:44px}
+.count{color:var(--mute);font-size:14px;margin:12px 0 10px}
+#list{border:1px solid var(--line);border-radius:10px}
+.src{padding:14px 16px;display:grid;grid-template-columns:7em minmax(0,1fr);gap:4px 14px;scroll-margin-top:20px;border-top:1px solid var(--faint)}
+.src:first-child{border-top:0}
+.src:target{background:#EFF6FF}
+.sid{font:600 14px Inter,sans-serif;color:var(--accent)}
+.sid em{display:block;font-style:normal;font-weight:600;font-size:12px;margin-top:4px;padding:2px 8px;border-radius:6px;width:max-content}
+.g3{background:#DCFCE7;color:#166534}.g2{background:#DBEAFE;color:#1E40AF}.g1,.g0{background:#F3F4F6;color:#374151}
+.t{font-weight:500;font-size:16px;text-decoration:none;color:var(--ink);line-height:1.4}
+.t:hover,.t:focus-visible{color:var(--accent);text-decoration:underline}
 .t::after{content:" ↗";color:var(--mute);font-weight:400}
-.meta{color:var(--mute);font-size:14px;margin-top:2px}
+.meta{color:var(--mute);font-size:13px;margin-top:3px}
 .note{margin-top:6px;font-size:15px}
 .mt{font-size:13px;color:var(--mute);margin-top:4px}
 details{margin-top:6px}
 summary{cursor:pointer;color:var(--mute);font-size:14px;min-height:28px}
-details p{white-space:pre-wrap;font-size:14px;color:#ddd0e2;margin:6px 0 0;overflow-wrap:anywhere}
-.quiet{color:var(--mute)}
-footer{color:var(--mute);font-size:13px}
-.made{display:inline-flex;align-items:center;gap:6px;margin:0 0 14px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:var(--mute);text-decoration:none;letter-spacing:.01em}
+details p{white-space:pre-wrap;font-size:14px;color:#374151;margin:6px 0 0;overflow-wrap:anywhere}
+.quiet{color:var(--mute);padding:14px 16px;margin:0}
+footer{color:var(--mute);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+.made{display:inline-flex;align-items:center;gap:6px;margin:0 0 10px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:var(--mute);text-decoration:none}
 .made b{font-weight:600;color:var(--ink)}
 .made:hover,.made:focus-visible{color:var(--ink);border-color:var(--mute)}
 .printmark{display:none}
-@media print{.made{display:none}.printmark{display:block;position:fixed;bottom:0;left:0;right:0;text-align:center;font-size:10px;color:#777;background:#fff;padding:4px 0}}
-@media(max-width:600px){.brief table{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:block;position:relative;border:0;padding:2px 0 2px 7.5em;white-space:normal!important}.stack td::before{content:attr(data-l);position:absolute;left:0;width:7em;color:var(--mute);font-weight:500}.tr{grid-template-columns:6em minmax(0,1fr) 2.5em}.src{grid-template-columns:minmax(0,1fr)}.sid{display:flex;gap:8px;align-items:center}.sid em{margin:0}}
+@media print{.made,.hbtns,.toc,.tbar,.tools,.chips{display:none}.top{background:#fff;color:#111}.top h1,.brand{color:#111}.layout{display:block}.printmark{display:block;position:fixed;bottom:0;left:0;right:0;text-align:center;font-size:10px;color:#777;background:#fff;padding:4px 0}}
+@media(max-width:900px){.toc{display:none}}
+@media(max-width:600px){.wrap{padding:0 16px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:block;position:relative;border:0;padding:2px 0 2px 7.5em;white-space:normal!important}.stack td::before{content:attr(data-l);position:absolute;left:0;width:7em;color:var(--mute);font-weight:500}.tr{grid-template-columns:6em minmax(0,1fr) 2.5em}.src{grid-template-columns:minmax(0,1fr)}.sid{display:flex;gap:8px;align-items:center}.sid em{margin:0}.tip{right:auto;left:0;width:min(300px,80vw)}}
 @media(prefers-reduced-motion:no-preference){.bar i{transition:flex-grow .4s}}
 </style></head><body>
-<div class="light">
-<header class="band"><div class="wrap">
-<a class="made" href="__REPO__" target="_blank" rel="noopener">Made with <b>SourceSweep™</b> ↗</a>
+<header class="top"><div class="wrap">
+<div class="bar1">
+<a class="brand" href="__REPO__" target="_blank" rel="noopener" aria-label="SourceSweep (opens the source code)"><svg aria-hidden="true" width="30" height="30" viewBox="0 0 26 26" fill="none" stroke="#7DD3FC" stroke-width="2" stroke-linecap="round"><path d="M11 11 L11 3.5 A7.5 7.5 0 0 1 17.5 7.25 Z" fill="#7DD3FC" fill-opacity=".35" stroke="none"></path><circle cx="11" cy="11" r="7.5"></circle><path d="M11 11 L11 4.5"></path><circle cx="11" cy="11" r="1.2" fill="#7DD3FC" stroke="none"></circle><path d="M16.6 16.6 L23 23" stroke-width="2.6"></path></svg>SourceSweep</a>
+<div class="hbtns">
+<div class="askwrap"><button type="button" class="hbtn ask" id="ask" aria-describedby="asktip"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"></path></svg>Ask Claude about these sources</button>
+<div class="tip" id="asktip" role="tooltip">Downloads this report's source pack and opens a new Claude chat with a starter prompt (also copied to your clipboard). Drop the file in, and answers will cite the same S# IDs as this report. Nothing is shared until you send.</div></div>
+<button type="button" class="hbtn pr" id="print">Print / PDF</button>
+</div></div>
 <h1 id="title">__TITLE__</h1>
 <p class="sub" id="window"></p>
-<ul class="kw" id="kw" aria-label="Keywords searched"></ul>
-<div class="figs" id="figs"></div>
-<div class="tape" id="tape" aria-label="Sources by type and relevance"></div>
-<div class="key" id="key"></div>
+<div class="kwrow"><span class="lbl">Profile keywords</span><ul class="kw" id="kw" aria-label="Profile keywords"></ul><span class="lbl" id="cadence" style="text-transform:none;letter-spacing:0"></span></div>
+<p class="status" id="srcstatus"></p>
 </div></header>
-<section class="band brief"><div class="wrap">
-<h2 style="margin-top:0">Briefing</h2>
+<div class="wrap layout">
+<nav class="toc" id="toc" aria-label="On this page"></nav>
+<main class="main">
+<div class="figs" id="figs" aria-label="At a glance"></div>
+<section class="card" id="mix" aria-labelledby="mixh"><h2 id="mixh" style="font-size:16px;font-family:Inter,sans-serif">Source mix</h2>
+<div class="tape" id="tape" aria-label="Sources by type and relevance"></div>
+<div class="key" id="key"></div></section>
+<section class="brief" id="briefing">
 __BRIEF__
-</div></section>
-</div>
-<section class="band"><div class="wrap">
-<h2 style="margin-top:0">Sources</h2>
+</section>
+<section id="sources" aria-labelledby="srch">
+<h2 id="srch">Sources</h2>
 <div class="tools">
-<input id="q" type="search" placeholder="Search titles, companies, notes, abstracts" aria-label="Search sources">
+<input id="q" type="search" placeholder="Search titles, companies, notes, IDs" aria-label="Search sources">
 <select id="rel" aria-label="Relevance"><option value="2">Relevant (2–3)</option><option value="3">Directly relevant (3)</option><option value="0">All sources</option></select>
 <select id="sort" aria-label="Sort"><option value="id">By source ID</option><option value="date">Newest first</option><option value="rel">Most relevant first</option></select>
 </div>
 <div class="chips" id="types" role="group" aria-label="Source types"></div>
 <p class="count" id="count"></p>
 <div id="list"></div>
-</div></section>
-<footer class="band"><div class="wrap" id="foot"></div></footer>
+</section>
+<footer><a class="made" href="__REPO__" target="_blank" rel="noopener">Made with <b>SourceSweep™</b> ↗</a><div id="foot"></div></footer>
+</main></div>
 <div class="toast" id="toast" role="status"></div>
 <div class="printmark">Created with SourceSweep™ · __REPO__</div>
 <script id="data" type="application/json">__DATA__</script>
@@ -901,6 +938,10 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const safe = u => /^https:\/\//.test(u || "") ? u : "";
 const KIND = {trial:"US trial", eu_trial:"EU trial", paper:"Paper", preprint:"Preprint", sec:"SEC filing", press:"Trade press", news:"News"};
 const REL = {3:"Directly relevant", 2:"Context", 1:"Tangential", 0:"Off-topic"};
+const TAG = {3:"Direct", 2:"Context", 1:"Tangential", 0:"Off-topic"};
+const SRC = {trials:["US trials (ClinicalTrials.gov)","https://clinicaltrials.gov/"], eu_trials:["EU trials (CTIS)","https://euclinicaltrials.eu/"],
+  pubmed:["PubMed","https://pubmed.ncbi.nlm.nih.gov/"], preprints:["Preprints (Europe PMC)","https://europepmc.org/"],
+  sec:["SEC filings (EDGAR)","https://www.sec.gov/edgar/search/"], press:["Trade press","https://news.google.com/"], news:["News","https://news.google.com/"]};
 const kinds = Object.keys(KIND).filter(k => D.rows.some(r => r.k === k));
 const rows = D.rows;
 const st = {types:new Set(kinds), q:"", rel:D.screened ? 2 : 0, sort:"id"};
@@ -910,12 +951,21 @@ document.getElementById("sort").value = st.sort;
 if (!D.screened) document.getElementById("rel").disabled = true;
 
 const when = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString("en-US", {month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short"}); };
-document.getElementById("window").textContent = `Scan window ${D.window[0]} to ${D.window[1]} (${D.days} days) · ${rows.length} sources` + (when(D.ran_at) ? ` · run ${when(D.ran_at)}` : "");
+document.getElementById("window").textContent = `${D.window[0]} to ${D.window[1]} (${D.days} days) · ${rows.length} sources` + (when(D.ran_at) ? ` · run ${when(D.ran_at)}` : "");
 document.getElementById("kw").innerHTML = D.keywords.map(k => `<li>${esc(k)}</li>`).join("");
+document.getElementById("cadence").textContent = `${D.lookback || D.days}-day window` + (D.cadence ? ` · runs every ${D.cadence} days` : "");
 const n3 = rows.filter(r => r.r === 3).length, n2 = rows.filter(r => r.r === 2).length;
-const failed = Object.entries(D.status).filter(([k, v]) => !/^ok|^skipped/.test(v)).map(([k]) => k);
-const figs = [[rows.length, "sources screened"], [n3, "directly relevant"], [n2, "context"], [kinds.length, "source types" + (failed.length ? ` (${failed.join(", ")} failed)` : "")]];
-document.getElementById("figs").innerHTML = figs.map(([v, l]) => `<div class="fig"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join("");
+const statusOk = v => /^ok|^skipped/.test(String(v));
+const failed = Object.entries(D.status).filter(([, v]) => !statusOk(v)).map(([k]) => k);
+const total = Object.keys(D.status).length, sEl = document.getElementById("srcstatus");
+if (!failed.length) sEl.textContent = `All ${total} sources verified`;
+else { sEl.classList.add("bad");
+  sEl.innerHTML = `${total - failed.length} of ${total} sources verified · ` + failed.map(k => { const [name, url] = SRC[k] || [k, ""];
+    return `${esc(name)} not reached, so it is missing from this report` + (url ? `: <a href="${esc(url)}" target="_blank" rel="noopener">check it directly ↗</a>` : ""); }).join("; "); }
+const nTrials = rows.filter(r => r.k.includes("trial")).length, nPapers = rows.filter(r => r.k === "paper" || r.k === "preprint").length;
+const figs = D.screened ? [[n3, "Directly relevant"], [n2, "Context"], [nTrials, "Trials"], [nPapers, "Papers & preprints"]]
+  : [[rows.length, "Sources found"], [nTrials, "Trials"], [nPapers, "Papers & preprints"], [kinds.length, "Source types"]];
+document.getElementById("figs").innerHTML = figs.map(([v, l]) => `<div class="fig"><span>${esc(l)}</span><b>${esc(v)}</b></div>`).join("");
 
 const max = Math.max(1, ...kinds.map(k => rows.filter(r => r.k === k).length));
 document.getElementById("tape").innerHTML = kinds.map(k => {
@@ -927,11 +977,23 @@ document.getElementById("tape").innerHTML = kinds.map(k => {
 }).join("");
 document.getElementById("key").innerHTML = D.screened ? [3, 2, 1].map(v => `<span><i class="r${v}"></i>${REL[v]}</span>`).join("") + `<span><i class="r0"></i>Off-topic</span>` : `<span>Not yet screened for relevance</span>`;
 
+// Table buttons sit beside the heading of the table they export.
+for (const bar of document.querySelectorAll(".brief .tbar")) {
+  const h = bar.previousElementSibling;
+  if (h && h.tagName === "H3") { const row = document.createElement("div"); row.className = "hrow"; h.replaceWith(row); row.append(h, bar); }
+}
+// Page menu from the briefing's headings.
+const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const toc = [`<span class="lbl">On this page</span>`];
+for (const h of document.querySelectorAll(".brief h3")) { h.id = h.id || "b-" + slugify(h.textContent); toc.push(`<a href="#${h.id}">${esc(h.textContent)}</a>`); }
+toc.push(`<a href="#sources">Sources (${rows.filter(r => !D.screened || (r.r ?? 0) >= 2).length})</a>`);
+document.getElementById("toc").innerHTML = toc.join("");
+
 const tchips = document.getElementById("types");
 tchips.innerHTML = kinds.map(k => `<button type="button" class="chip" data-k="${k}" aria-pressed="true">${KIND[k]}</button>`).join("");
 
 function card(r) {
-  const u = safe(r.u), relTag = r.r != null && D.screened ? `<em class="r${r.r}" style="color:${r.r >= 2 ? "var(--bg)" : "var(--ink)"}">${REL[r.r]}</em>` : "";
+  const u = safe(r.u), relTag = r.r != null && D.screened ? `<em class="g${r.r}">${TAG[r.r]}</em>` : "";
   const title = u ? `<a class="t" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(r.t)}</a>` : `<span class="t">${esc(r.t)}</span>`;
   const meta = [KIND[r.k], r.v, r.d, r.x].filter(Boolean).map(esc).join(" · ");
   return `<article class="src" id="${esc(r.s)}"><div class="sid">${esc(r.s)}${relTag}</div><div>${title}
@@ -963,37 +1025,58 @@ function reveal(id) {
 tchips.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return;
   st.types.has(b.dataset.k) && st.types.size > 1 ? st.types.delete(b.dataset.k) : st.types.add(b.dataset.k); draw(); });
 document.getElementById("tape").addEventListener("click", e => { const b = e.target.closest("[data-only]"); if (!b) return;
-  st.types = new Set([b.dataset.only]); draw(); document.getElementById("types").scrollIntoView({block:"start"}); });
+  st.types = new Set([b.dataset.only]); draw(); document.getElementById("sources").scrollIntoView({block:"start"}); });
 document.getElementById("q").addEventListener("input", e => { st.q = e.target.value; draw(); });
 document.getElementById("rel").addEventListener("change", e => { st.rel = +e.target.value; draw(); });
 document.getElementById("sort").addEventListener("change", e => { st.sort = e.target.value; draw(); });
 document.addEventListener("click", e => { const a = e.target.closest("a.cite"); if (!a) return; e.preventDefault(); reveal(a.dataset.s); try { history.replaceState(null, "", "#" + a.dataset.s); } catch (err) {} });
-window.addEventListener("hashchange", () => reveal(location.hash.slice(1)));
+window.addEventListener("hashchange", () => { if (/^#S\d+$/.test(location.hash)) reveal(location.hash.slice(1)); });
 
-document.getElementById("foot").innerHTML = `Scan run ${esc(when(D.ran_at) || D.generated)} by <a href="${esc(D.repo)}">SourceSweep™</a>, built by Tegan Anderes / Anderes Lab Solutions. Source status: ${Object.entries(D.status).map(([k, v]) => esc(k + " " + v)).join(" · ")}.` +
+document.getElementById("foot").innerHTML = `Scan run ${esc(when(D.ran_at) || D.generated)} by <a href="${esc(D.repo)}">SourceSweep™</a>, built by Tegan Anderes / Anderes Lab Solutions. Every statement in the briefing cites a numbered source. Source status: ${Object.entries(D.status).map(([k, v]) => esc(k + " " + v)).join(" · ")}.` +
   (safe(D.hub) ? ` <a href="${esc(D.hub)}">Edit profiles and see past scans</a>.` : "");
 const toCSV = t => t.map(r => r.map(c => /[",\n]/.test(String(c)) ? `"${String(c).replace(/"/g, '""')}"` : String(c)).join(",")).join("\r\n") + "\r\n";
-const toast = m => { const t = document.getElementById("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("on"), 2400); };
+const toast = m => { const t = document.getElementById("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("on"), 3200); };
 let dl = null;
 (async () => { try { dl = await window.claude?.use?.("downloads"); } catch (e) { dl = null; } })();
+async function save(name, text, type) {
+  if (dl) { try { await dl.save({filename: name, data: text}); return true; } catch (err) { return err?.code === "declined" ? null : false; } }
+  try {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); return true;
+  } catch (err) { return false; }
+}
 document.addEventListener("click", async e => {
   const b = e.target.closest("[data-csv],[data-copycsv]"); if (!b) return;
   const n = +(b.dataset.csv ?? b.dataset.copycsv), csv = toCSV(D.tables[n] || []);
-  const name = `${D.slug || "landscape"}_assets_${D.window[1]}.csv`;
   if (b.dataset.copycsv !== undefined) {
-    try { await navigator.clipboard.writeText(csv); toast("CSV copied. Paste it into Excel or Google Sheets"); } catch (err) { toast("Copying isn't allowed here. Use Download CSV"); }
+    try { await navigator.clipboard.writeText(csv); toast("Table copied. Paste it into Excel or Google Sheets"); } catch (err) { toast("Copying isn't allowed here. Use Download table"); }
     return;
   }
-  if (dl) {
-    try { await dl.save({filename: name, data: "\ufeff" + csv}); toast("CSV saved"); }
-    catch (err) { if (err?.code !== "declined") toast("Download isn't available here. Use Copy CSV"); }
-    return;
-  }
-  try {
-    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + csv], {type: "text/csv"})); a.download = name;
-    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-  } catch (err) { toast("Download isn't available here. Use Copy CSV"); }
+  const ok = await save(`${D.slug || "landscape"}_assets_${D.window[1]}.csv`, "﻿" + csv, "text/csv");
+  if (ok) toast("Table saved as CSV"); else if (ok === false) toast("Download isn't available here. Use Copy table");
 });
+
+// Ask Claude: the source pack as markdown, plus a starter prompt.
+function pack() {
+  const L = [`# Source pack: ${D.name}`, `Window: ${D.window[0]} to ${D.window[1]} · generated by SourceSweep`, "",
+    "Answer only from these sources and cite their IDs like [S12]. Follow the links for full text.", "",
+    `Profile keywords: ${D.keywords.join(", ")}`, "", `## Sources (${rows.length})`];
+  for (const r of rows) {
+    L.push("", `### [${r.s}] ${r.t}`, `- Type: ${[KIND[r.k], r.v, r.d, r.x].filter(Boolean).join(" · ")}`, `- Link: ${r.u}`);
+    if (r.r != null && D.screened) L.push(`- Relevance: ${REL[r.r]}` + (r.n ? ` · ${r.n}` : ""));
+    if (r.a) L.push("", "> " + r.a.trim().replace(/\n/g, "\n> "));
+  }
+  return L.join("\n") + "\n";
+}
+document.getElementById("ask").addEventListener("click", async () => {
+  const name = `${D.slug || "landscape"}_sources_${D.window[1]}.md`;
+  const prompt = `I'm attaching a SourceSweep source pack for "${D.name}" (${D.window[0]} to ${D.window[1]}, ${rows.length} sources). Answer only from these sources and cite their IDs like [S12]. If the pack doesn't cover something, say so. My first question: `;
+  const ok = await save(name, pack(), "text/markdown");
+  try { await navigator.clipboard.writeText(prompt); } catch (err) {}
+  window.open("https://claude.ai/new?q=" + encodeURIComponent(prompt), "_blank", "noopener");
+  toast(ok ? `Saved ${name}. Drop it into the new Claude chat` : "Couldn't save the source pack here. Download it from the app instead");
+});
+document.getElementById("print").addEventListener("click", () => window.print());
 draw();
 if (/^#S\d+$/.test(location.hash)) reveal(location.hash.slice(1));
 }
