@@ -4,6 +4,8 @@
 
 - Link check: DOI links (most preprints) are checked at doi.org without following the redirect, since preprint and publisher sites often block automated visits; SEC links use the "name email" User-Agent the SEC asks for. On the KLA year review this verified all 94 links that 1.3.0 could not check.
 - Reports no longer list "Relevant sources not cited above"; every relevant source is still in the source list. The skill now checks its uncited relevant sources itself before publishing.
+- Reports: wide tables fit without sideways scrolling (citation chips wrap; wider main column); the page menu has arrows, bold labels and drops trailing date ranges in parentheses.
+- Web app: Run history lists each run with its date, time and time zone, its type (scheduled, Claude session, baseline or year in review) and an Open button on the same row. The profile overview compares the latest scan with the run saved just before it, including a baseline report.
 
 ## 1.3.0 (2026-11-25)
 

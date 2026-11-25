@@ -93,6 +93,8 @@ section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p{color:#CBD5E1!i
 [class*="st-key-rr_"] button p{text-align:left}
 p.ss-key{font-size:.75rem!important}
 section[data-testid="stSidebar"] [data-testid="stTextInputRootElement"], section[data-testid="stSidebar"] [data-testid="stTextInputRootElement"] *{background:#1E293B!important}
+.ss-th{font-size:.75rem!important;color:#4B5563!important;margin:0!important;text-transform:uppercase;letter-spacing:.05em}
+[class*="st-key-hist_row_"]{border-top:1px solid #E5E7EB;padding-top:6px}
 /* dark sidebar */
 section[data-testid="stSidebar"]{background:#0F172A}
 section[data-testid="stSidebar"] *{color:#CBD5E1}
@@ -297,7 +299,9 @@ def _overview(p, can_save, use_ai):
     rs = overview.runs(p["folder"])
     rout = overview.routine(rs)
     latest = rout[0] if rout else (rs[0] if rs else None)
-    prev = rout[1] if len(rout) > 1 else None
+    # Compare with the run saved just before it, a baseline (e.g. a year in review) included.
+    after = [r for r in rs if latest and r["path"] != latest["path"] and str(r["ran_at"] or r["date"]) <= str(latest["ran_at"] or latest["date"])]
+    prev = after[0] if after else None
 
     left, right = st.columns([3, 1.3], vertical_alignment="bottom")
     with left:
@@ -492,21 +496,44 @@ def _adhoc_tab(use_ai):
             st.info("Enter keywords and run a one-off scan. To keep a scan and re-run it, add a profile instead.")
 
 
+def _run_kind(r):
+    run = {}
+    try:
+        run = json.loads((Path(r["path"]) / "run.json").read_text())
+    except (OSError, ValueError):
+        return "Claude session"
+    kind = run.get("kind")
+    return kind.split(",")[0].capitalize() if kind else "Scheduled"
+
+
+def _when_tz(iso):
+    try:
+        return datetime.fromisoformat(str(iso).replace("Z", "+00:00")).astimezone().strftime("%b %-d, %Y · %-I:%M %p %Z")
+    except ValueError:
+        return str(iso)
+
+
 def _history_tab(root):
     rows = [(p, r) for p in load_profiles(root) for r in runs_for(p["folder"])]
     if not rows:
         st.info("No saved reports yet. Scheduled GitHub runs (or `sourcesweep run profiles/<name>`) save them here.")
         return
     rows.sort(key=lambda x: str(x[1]["ran_at"] or x[1]["date"]), reverse=True)
-    st.dataframe([{"Profile": p["cfg"]["name"], "Run": _when(r["ran_at"]) if r["ran_at"] else r["date"],
-                   "Sources": r["total"], "Directly relevant": r["direct"], "Context": r["context"]} for p, r in rows],
-                 hide_index=True, width="stretch")
-    labels = [f"{p['cfg']['name']} · {r['date']}" for p, r in rows]
-    pick = st.selectbox("Open a report", range(len(rows)), format_func=lambda i: labels[i])
-    if st.button("Open", type="primary"):
-        p, r = rows[pick]
-        st.session_state.view = {"path": r["path"], "title": labels[pick], "stem": f"{p['slug']}_{r['date']}"}
-        st.rerun()
+    widths = [1.4, 2.2, 1.4, 0.8, 1, 0.8, 1]
+    head = st.columns(widths, vertical_alignment="center")
+    for c, t in zip(head, ("Profile", "Run", "Type", "Sources", "Directly relevant", "Context", "")):
+        c.markdown(f"<p class='ss-th'>{t}</p>", unsafe_allow_html=True)
+    for n, (p, r) in enumerate(rows):
+        with st.container(key=f"hist_row_{n}"):
+            c = st.columns(widths, vertical_alignment="center")
+            c[0].markdown(f"**{html.escape(p['cfg']['name'])}**")
+            c[1].markdown(html.escape(_when_tz(r["ran_at"]) if r["ran_at"] else f"{r['date']} (time not recorded)"))
+            c[2].markdown(html.escape(_run_kind(r)))
+            for i, k in ((3, "total"), (4, "direct"), (5, "context")):
+                c[i].markdown("–" if r[k] is None else str(r[k]))
+            if c[6].button("Open", key=f"hist_open_{n}", type="primary", width="stretch"):
+                st.session_state.view = {"path": r["path"], "title": f"{p['cfg']['name']} · {r['path'].name}", "stem": f"{p['slug']}_{r['path'].name}"}
+                st.rerun()
 
 
 # ------------------------------------------------------------------ app

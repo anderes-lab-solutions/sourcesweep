@@ -38,12 +38,13 @@ h1{font:600 clamp(30px,4vw,40px)/1.1 "Space Grotesk",Inter,sans-serif;letter-spa
 .status{margin:12px 0 0;font-size:14px;color:#86EFAC}
 .status.bad{color:#FCA5A5;font-weight:500}
 .status.bad a{color:#FCA5A5}.status .cite{background:#7F1D1D;color:#FEE2E2}
-.layout{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;padding-top:28px;padding-bottom:56px}
-.toc{flex:0 1 168px;max-width:168px;margin-left:-10px;position:sticky;top:16px;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.layout{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start;padding-top:28px;padding-bottom:56px}
+.toc{flex:0 0 160px;max-width:160px;margin-left:-10px;position:sticky;top:16px;display:flex;flex-direction:column;gap:2px;font-size:14px}
 .toc .lbl{color:var(--mute);padding:0 10px 8px}
-.toc a{padding:7px 10px;border-radius:6px;color:#374151;text-decoration:none}
+.toc a{padding:7px 10px;border-radius:6px;color:#111827;text-decoration:none;font-weight:600;display:flex;gap:8px;align-items:baseline;line-height:1.35}
+.toc a::before{content:"→";color:var(--accent);font-weight:600;flex:none}
 .toc a:hover,.toc a:focus-visible{background:#EFF6FF;color:var(--accent);outline:none}
-.main{flex:999 1 640px;max-width:1080px;display:flex;flex-direction:column;gap:36px}
+.main{flex:999 1 640px;display:flex;flex-direction:column;gap:36px}
 h2,h3{font:600 22px/1.25 "Space Grotesk",Inter,sans-serif;margin:0 0 12px;scroll-margin-top:16px}
 h4{font:600 17px/1.3 Inter,sans-serif;margin:20px 0 6px}
 .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(10em,1fr));gap:12px}
@@ -66,9 +67,10 @@ h4{font:600 17px/1.3 Inter,sans-serif;margin:20px 0 6px}
 .brief p,.brief li{max-width:72ch}
 .brief table{width:100%;border-collapse:collapse;font-size:14px}
 .brief th{text-align:left;font-weight:500;color:var(--mute);font-size:12px;background:#F9FAFB;padding:10px 12px;vertical-align:bottom}
-.brief td{border-top:1px solid var(--faint);padding:11px 12px;vertical-align:top}
+.brief td{border-top:1px solid var(--faint);padding:11px 10px;vertical-align:top}
 .brief td:first-child{font-weight:600}
 .brief td.nw{white-space:nowrap;color:var(--mute)}
+.brief td.nw .cites{display:block;margin-top:2px}.brief td.nw .cite{margin-left:0}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin:4px 0 10px}
 .hrow{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:28px 0 12px}
 .hrow h3{margin:0!important}
@@ -80,6 +82,7 @@ h4{font:600 17px/1.3 Inter,sans-serif;margin:20px 0 6px}
 .toast.on{opacity:1}
 .brief li{margin:6px 0}
 .cites{white-space:nowrap}
+.brief td .cites{white-space:normal}.brief td .cite{margin-top:3px}
 .cite{display:inline-block;font-size:12px;font-weight:600;text-decoration:none;color:#1E40AF;background:#DBEAFE;border-radius:4px;padding:0 5px;margin-left:3px;line-height:18px}
 .cite:hover,.cite:focus-visible{background:var(--accent);color:#fff;outline:none}
 .tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
@@ -113,7 +116,7 @@ footer{color:var(--mute);font-size:13px;border-top:1px solid var(--line);padding
 .made:hover,.made:focus-visible{color:var(--ink);border-color:var(--mute)}
 .printmark{display:none}
 @media print{.made,.hbtns,.toc,.tbar,.tools,.chips{display:none}.top{background:#fff;color:#111}.top h1,.brand{color:#111}.layout{display:block}.printmark{display:block;position:fixed;bottom:0;left:0;right:0;text-align:center;font-size:10px;color:#777;background:#fff;padding:4px 0}}
-@media(max-width:900px){.toc{display:none}}
+@media(max-width:1000px){.toc{display:none}}
 @media(max-width:600px){.wrap{padding:0 16px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:block;position:relative;border:0;padding:2px 0 2px 7.5em;white-space:normal!important}.stack td::before{content:attr(data-l);position:absolute;left:0;width:7em;color:var(--mute);font-weight:500}.tr{grid-template-columns:6em minmax(0,1fr) 2.5em}.src{grid-template-columns:minmax(0,1fr)}.sid{display:flex;gap:8px;align-items:center}.sid em{margin:0}.tip{right:auto;left:0;width:min(300px,80vw)}}
 @media(prefers-reduced-motion:no-preference){.bar i{transition:flex-grow .4s}}
 </style></head><body>
@@ -232,7 +235,7 @@ for (const bar of document.querySelectorAll(".brief .tbar")) {
 // Page menu from the briefing's headings.
 const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const toc = [`<span class="lbl">On this page</span>`];
-for (const h of document.querySelectorAll(".brief h3")) { h.id = h.id || "b-" + slugify(h.textContent); toc.push(`<a href="#${h.id}">${esc(h.textContent)}</a>`); }
+for (const h of document.querySelectorAll(".brief h3")) { h.id = h.id || "b-" + slugify(h.textContent); toc.push(`<a href="#${h.id}">${esc(h.textContent.replace(/\s*\([^)]*\)\s*$/, ""))}</a>`); }
 toc.push(`<a href="#sources">Sources (${rows.filter(r => !D.screened || (r.r ?? 0) >= 2).length})</a>`);
 document.getElementById("toc").innerHTML = toc.join("");
 
