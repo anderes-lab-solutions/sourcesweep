@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sourcesweep"
-version = "1.1.0"
+version = "1.2.0"
 description = "SourceSweep: cited competitive landscape scans for biotech. US/EU trials, PubMed, preprints, SEC filings, trade press and news."
 readme = "README.md"
 license = "AGPL-3.0-only"
@@ -33,3 +33,6 @@ Demo = "https://anderes-lab-solutions.github.io/sourcesweep/"
 
 [tool.setuptools]
 packages = ["sourcesweep"]
+
+[tool.setuptools.package-data]
+sourcesweep = ["logo.png"]

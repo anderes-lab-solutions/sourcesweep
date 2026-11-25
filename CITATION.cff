@@ -7,7 +7,7 @@ authors:
   - family-names: "Anderes"
     given-names: "Tegan"
     affiliation: "Anderes Lab Solutions"
-version: "1.1.0"
+version: "1.2.0"
 date-released: "2026-11-25"
 license: AGPL-3.0-only
 repository-code: "https://github.com/anderes-lab-solutions/sourcesweep"

@@ -5,7 +5,7 @@ description: "Run a SourceSweep competitive landscape scan (also called a landsc
 
 # SourceSweep™: competitive landscape scan
 
-<!-- Built from https://github.com/anderes-lab-solutions/sourcesweep (v1.1.0). Copyright 2026 Tegan Anderes / Anderes Lab Solutions. GNU AGPL-3.0-only; keep this attribution (see NOTICE). Edit skill/SKILL.template.md and sourcesweep/scanner.py, then run tools/build_skill.py. -->
+<!-- Built from https://github.com/anderes-lab-solutions/sourcesweep (v1.2.0). Copyright 2026 Tegan Anderes / Anderes Lab Solutions. GNU AGPL-3.0-only; keep this attribution (see NOTICE). Edit skill/SKILL.template.md and sourcesweep/scanner.py, then run tools/build_skill.py. -->
 
 Targeted pre-scrape for any set of search keywords. A bundled script searches seven public sources
 over a lookback window (default 60 days). You then screen every source for relevance, write a
@@ -200,7 +200,7 @@ from email.utils import parsedate_to_datetime
 import os
 from pathlib import Path
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 UA_NAME = "sourcesweep"
 REPO_URL = "https://github.com/anderes-lab-solutions/sourcesweep"
 
@@ -779,6 +779,7 @@ REPORT_HTML = r"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="generator" content="SourceSweep __VERSION__ (__REPO__)">
 <title>__TITLE__ report</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22256%22%20height%3D%22256%22%20viewBox%3D%220%200%2026%2026%22%20fill%3D%22none%22%20stroke%3D%22%231F4FD8%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M11%2011%20L11%203.5%20A7.5%207.5%200%200%201%2017.5%207.25%20Z%22%20fill%3D%22%231F4FD8%22%20fill-opacity%3D%22.3%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%227.5%22/%3E%3Cpath%20d%3D%22M11%2011%20L11%204.5%22/%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%221.3%22%20fill%3D%22%231F4FD8%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M16.6%2016.6%20L23%2023%22%20stroke-width%3D%222.8%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
 <style>

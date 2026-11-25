@@ -346,7 +346,7 @@ def _history_tab(root):
 # ------------------------------------------------------------------ app
 
 def main(profiles_dir=None, title="SourceSweep™", subtitle="Cited competitive landscape scans for biotech"):
-    st.set_page_config(page_title=title.replace("™", ""), page_icon="🔭", layout="wide")
+    st.set_page_config(page_title=title.replace("™", ""), page_icon=str(Path(__file__).with_name("logo.png")), layout="wide")
     for key in ("ANTHROPIC_API_KEY", "SOURCESWEEP_EMAIL", "SOURCESWEEP_MODEL"):
         if _secret(key) and not os.environ.get(key):
             os.environ[key] = _secret(key)

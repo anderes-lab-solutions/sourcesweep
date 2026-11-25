@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="generator" content="SourceSweep 1.1.0 (https://github.com/anderes-lab-solutions/sourcesweep)">
+<meta name="generator" content="SourceSweep 1.2.0 (https://github.com/anderes-lab-solutions/sourcesweep)">
 <title>Claudin 18.2 (example) scan 2026-11-24</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22256%22%20height%3D%22256%22%20viewBox%3D%220%200%2026%2026%22%20fill%3D%22none%22%20stroke%3D%22%231F4FD8%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M11%2011%20L11%203.5%20A7.5%207.5%200%200%201%2017.5%207.25%20Z%22%20fill%3D%22%231F4FD8%22%20fill-opacity%3D%22.3%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%227.5%22/%3E%3Cpath%20d%3D%22M11%2011%20L11%204.5%22/%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%221.3%22%20fill%3D%22%231F4FD8%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M16.6%2016.6%20L23%2023%22%20stroke-width%3D%222.8%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -190,7 +191,7 @@ if (!D.screened) document.getElementById("rel").disabled = true;
 const when = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString("en-US", {month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short"}); };
 document.getElementById("window").textContent = `${D.window[0]} to ${D.window[1]} (${D.days} days) · ${rows.length} sources` + (when(D.ran_at) ? ` · run ${when(D.ran_at)}` : "");
 document.getElementById("kw").innerHTML = D.keywords.map(k => `<li>${esc(k)}</li>`).join("");
-document.getElementById("cadence").textContent = `${D.lookback || D.days}-day window` + (D.cadence ? ` · runs every ${D.cadence} days` : "");
+document.getElementById("cadence").textContent = `${D.days}-day window` + (D.cadence ? ` · runs every ${D.cadence} days` : "");
 const n3 = rows.filter(r => r.r === 3).length, n2 = rows.filter(r => r.r === 2).length;
 const statusOk = v => /^ok|^skipped/.test(String(v));
 const failed = Object.entries(D.status).filter(([, v]) => !statusOk(v)).map(([k]) => k);
