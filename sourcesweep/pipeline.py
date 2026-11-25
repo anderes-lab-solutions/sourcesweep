@@ -35,9 +35,10 @@ def run(cfg, out, days=None, use_ai=True, history_dir=None, progress=print, hub=
     if hits:
         progress(f"Reusing earlier screening for {len(hits)} of {len(items)} sources")
     scr = screen.screen(cfg, [i for i in items if i["sid"] not in hits], usage, progress=progress, use_ai=use_ai)
-    scr.update({sid: {"rel": c["rel"], "note": c["note"], "by": "ai"} for sid, c in hits.items()})
+    scr.update({sid: {"rel": c["rel"], "note": c["note"], "type": c.get("type", ""), "limits": c.get("limits", ""), "by": "ai"}
+                for sid, c in hits.items()})
     scr = {i["sid"]: scr[i["sid"]] for i in items}
-    (out / "screening.json").write_text(json.dumps({k: {"rel": v["rel"], "note": v["note"]} for k, v in scr.items()}, indent=1))
+    (out / "screening.json").write_text(json.dumps({k: {f: v.get(f, "") for f in ("rel", "note", "type", "limits")} for k, v in scr.items()}, indent=1))
     if history_dir and ai:
         save_cache(cfg, history_dir, items, scr)
 
@@ -65,7 +66,7 @@ def run(cfg, out, days=None, use_ai=True, history_dir=None, progress=print, hub=
     summary.update(direct=sum(1 for v in scr.values() if v["rel"] == 3),
                    context=sum(1 for v in scr.values() if v["rel"] == 2),
                    ai=usage.as_dict() if usage.calls else None, changes=change_summary,
-                   screening_reused=len(hits), briefing_skipped=skipped,
+                   screening_reused=len(hits), briefing_skipped=skipped, citation_check=usage.check,
                    ran_at=data.get("generated_at"))
     (out / "run.json").write_text(json.dumps(summary, indent=1))
     return summary
@@ -104,7 +105,7 @@ def save_cache(cfg, history_dir, items, scr):
     """Keep scores for every source screened by the AI under this profile (older entries are kept too)."""
     f = Path(history_dir) / CACHE_FILE
     old = load_cache(cfg, history_dir)
-    old.update({track._key(i): {"h": content_hash(i), "rel": scr[i["sid"]]["rel"], "note": scr[i["sid"]]["note"]}
+    old.update({track._key(i): {"h": content_hash(i), **{f: scr[i["sid"]].get(f, "") for f in ("rel", "note", "type", "limits")}}
                 for i in items if scr[i["sid"]].get("by") == "ai"})
     f.parent.mkdir(parents=True, exist_ok=True)
     f.write_text(json.dumps({"profile": profile_hash(cfg), "items": old}, indent=0, sort_keys=True))

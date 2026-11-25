@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.3.0 (unreleased)
+
+Accuracy and coverage, from a line-by-line review of a client briefing against its sources:
+- Screening reads the parts of each abstract that matter (sentences naming a keyword, plus results and conclusions) instead of the first 600 characters. Anything scored tangential or off-topic whose text names a keyword is screened again with the whole abstract.
+- Screening records each relevant source's evidence type and the limits it states (subgroup-only results, non-significant endpoints, sample size, definitions, model system). The briefing is written from these, and reports show them under each source.
+- New writing rules: keep stated qualifiers, label non-clinical evidence, cite every supporting source for a general claim or narrow it, surface contradicting evidence where it bears, don't merge different drugs or definitions, cite a commentary's primary paper.
+- Citation check: before a briefing is saved, a second pass reads the full text of every cited source and corrects unsupported claims, dropped qualifiers and overgeneralizations. Its changes are logged in run.json.
+- Commentaries and editorials are detected and linked to the paper they discuss.
+- Every report lists relevant sources the briefing doesn't cite, so nothing screened as relevant goes unseen.
+- The Claude skill follows the same screening and writing rules, including never scoring on a title alone.
+
+App and reports:
+
+- Web app: a profile overview page for each profile, laid out like the report: keywords and schedule, figure cards (sources screened, directly relevant, new since the last run, sources verified), what changed since the last routine scan, the key assets table, source mix and recent runs.
+- Web app: dark sidebar with the SourceSweep mark, navigation, a watchlist of profiles, AI screening settings and links to the source code, docs, changelog and issues.
+- Profile forms show grey example text in every field; examples are never saved into a profile.
+- Every source found is now checked: each link is opened once during the scan and recorded as ok, broken (404/410) or couldn't be checked. Reports say "All 7 databases searched · N of M source links verified" and flag broken links in red; the app's "Sources verified" card counts them. Skip with `scan --no-link-check`.
+- The app's subtitle sits under the name in the sidebar instead of at the top of the page.
+- New `sourcesweep.overview` module: the overview's numbers, read only from saved run files. One-off runs such as a year in review are listed but not used for routine comparisons.
+
 ## 1.2.0 (2026-11-25)
 
 - New report design: navy header with the SourceSweep mark, profile keywords, window and schedule, and a source status line ("All 7 sources verified", or which source wasn't reached with a link to check it directly). A page menu on the left, figure cards, source mix, then the briefing and source list.

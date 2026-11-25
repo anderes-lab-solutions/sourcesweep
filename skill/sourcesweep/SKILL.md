@@ -5,7 +5,7 @@ description: "Run a SourceSweep competitive landscape scan (also called a landsc
 
 # SourceSweep™: competitive landscape scan
 
-<!-- Built from https://github.com/anderes-lab-solutions/sourcesweep (v1.2.0). Copyright 2026 Tegan Anderes / Anderes Lab Solutions. GNU AGPL-3.0-only; keep this attribution (see NOTICE). Edit skill/SKILL.template.md and sourcesweep/scanner.py, then run tools/build_skill.py. -->
+<!-- Built from https://github.com/anderes-lab-solutions/sourcesweep (v1.3.0). Copyright 2026 Tegan Anderes / Anderes Lab Solutions. GNU AGPL-3.0-only; keep this attribution (see NOTICE). Edit skill/SKILL.template.md and sourcesweep/scanner.py, then run tools/build_skill.py. -->
 
 Targeted pre-scrape for any set of search keywords. A bundled script searches seven public sources
 over a lookback window (default 60 days). You then screen every source for relevance, write a
@@ -102,7 +102,8 @@ If a source shows FAILED in the summary, continue with the rest and mention it i
 
 ## Step 5: Screen for relevance
 
-Read `index.md` first. Then read abstracts in batches for anything you can't judge from the title:
+Read `index.md` first. Then read the abstracts in batches. **Never score a paper, preprint or filing on its title
+alone**: a finding about a keyword is often only in the results or conclusions.
 ```bash
 python3 /tmp/sourcesweep.py show --out "$OUT" S3 S7 S12
 ```
@@ -114,21 +115,45 @@ Score every source against the profile's `context` (or the user's evident scope)
 - **1, tangential:** mentions a keyword in passing
 - **0, off-topic**
 
+Judge by the findings and conclusions: a source whose results or conclusions report something about a keyword is at
+least 2, even if its main topic is something else. Before writing the scores, re-read in full every source you scored
+0 or 1 whose text names a keyword (`grep -il` on `sources.md` helps find them).
+Sources marked "Commentary or editorial on [S#]" are not independent evidence: score them, but cite the primary paper.
+
 Type-specific notes:
 - **sec**: read the excerpts. 8-K decks and 10-Qs often hold the most decision-relevant facts (dropped trials, IND timing, competitor lists). Boilerplate risk-factor mentions are 1
 - **eu_trial**: CTIS status is a numeric code; rely on the last-updated date and title. Flag EU-only trials and ones that differ from the US record
 - **press** items marked "(in article text)" have no abstract; judge them by title and company, and don't state facts that aren't in the title
 
-Give each source scored 2 or 3 a one-sentence note on what it adds. Use only facts in the source.
-Write every score to `$OUT/screening.json`, covering all sources:
+Give each source scored 2 or 3:
+- **note**: one sentence on what it adds;
+- **type**: clinical trial, observational, preclinical, review, commentary, company statement, registry record or news;
+- **limits**: up to 30 words of qualifiers the source itself states that limit its main finding (significant only in a
+  subgroup, a non-significant endpoint, small n, the definition or cutoff used, model system, interim data), or "".
+Use only facts in the source. Write every score to `$OUT/screening.json`, covering all sources:
 ```json
-{"S1": {"rel": 3, "note": "ASPENOVA confirmatory trial"}, "S2": {"rel": 1, "note": ""}}
+{"S1": {"rel": 3, "note": "ASPENOVA confirmatory trial", "type": "registry record", "limits": ""}, "S2": {"rel": 1, "note": ""}}
 ```
 
 ## Step 6: Write the briefing
 
 Report what the sources say and attribute it ("the registry lists...", "the company reported..."). Don't add your own
 scientific interpretation, predictions, rankings of assets or strategic recommendations: the reader draws the conclusions.
+
+Rules for every claim:
+- Keep the qualifiers from **limits**: a subgroup-only result, a non-significant endpoint, the sample size, the
+  definition or cutoff. Leave a finding out rather than state it without the qualifier that changes it.
+- Say what kind of evidence it is when it isn't a clinical result (preclinical, observational, review, company statement).
+- A general claim ("companies", "studies") cites every source in the pack that supports it, or is narrowed to what it cites.
+- When sources complicate or contradict a statement, say so in the same place; when findings point in opposite
+  directions, give the condition that separates them if a source states it, otherwise say they disagree.
+- Cite a commentary's primary paper, not the commentary, for findings.
+- Don't merge different drugs, mechanisms, combinations or definitions into one claim. A source may be cited in more than one section.
+
+**Check before publishing.** Re-read the full text (`show`) of every source the briefing cites and correct any claim
+that is unsupported, drops a stated qualifier, rests a general claim on one source, or merges different things.
+The report adds a "Relevant sources not cited above" list for relevant sources the briefing doesn't cite; after
+`render`, skim it for anything that belongs in the briefing.
 
 Create `briefing.md` in `$OUT`:
 
@@ -193,14 +218,14 @@ https://github.com/anderes-lab-solutions/sourcesweep
   python3 sourcesweep.py show --out DIR S3 S12
   python3 sourcesweep.py render --out DIR [--hub https://claude.ai/...]   # writes DIR/report.html
 """
-import argparse, json, re, sys, time, urllib.parse, urllib.request
+import argparse, json, re, sys, time, urllib.error, urllib.parse, urllib.request
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 import os
 from pathlib import Path
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 UA_NAME = "sourcesweep"
 REPO_URL = "https://github.com/anderes-lab-solutions/sourcesweep"
 
@@ -239,6 +264,43 @@ def get(url, params=None, data=None, timeout=60, json_body=None, ua=f"{UA_NAME}/
             if attempt == 2 or (code and code < 500 and code != 429):
                 raise
             time.sleep(3 * (attempt + 1))
+
+
+def check_link(url, ua, timeout=12):
+    """'ok' if the source's link opens, 'broken' if the site says it is gone (404/410), else 'unchecked'
+    (the site blocked the check, timed out or needs a sign-in: that says nothing about the source)."""
+    if not str(url).startswith("https://"):
+        return "unchecked"
+    for method in ("HEAD", "GET"):
+        req = urllib.request.Request(url, method=method, headers={"User-Agent": ua, "Accept": "*/*"})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                if method == "GET":
+                    r.read(1)
+                return "ok"
+        except urllib.error.HTTPError as e:
+            if e.code in (404, 410):
+                return "broken"
+            if method == "GET" or e.code not in (403, 405, 400, 429, 501):
+                return "unchecked"
+        except Exception:
+            return "unchecked"
+    return "unchecked"
+
+
+def verify_links(items, cfg=None, log=None, workers=16):
+    """Open every source's link once and record the result on the item as item["link"]. Returns the counts."""
+    from concurrent.futures import ThreadPoolExecutor
+    ua = f"{UA_NAME}/{__version__} ({REPO_URL}; {contact(cfg or {})})"
+    urls = sorted({i["url"] for i in items if i.get("url")})
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        res = dict(zip(urls, ex.map(lambda u: check_link(u, ua), urls)))
+    for i in items:
+        i["link"] = res.get(i.get("url"), "unchecked")
+    counts = {k: sum(1 for i in items if i["link"] == k) for k in ("ok", "broken", "unchecked")}
+    if log:
+        log(f"links: {counts['ok']} ok, {counts['broken']} broken, {counts['unchecked']} could not be checked")
+    return counts
 
 
 def normalize_keywords(cfg):
@@ -520,12 +582,36 @@ def label(item):
     return ", ".join(item["matched"]) or fallback.get(item["kind"], "(none in text)")
 
 
+COMMENT_TYPES = {"Comment", "Editorial", "News", "Letter"}
+
+
+def link_commentaries(items):
+    """Mark commentaries and editorials, and link each to the paper it discusses when that paper is in the pack,
+    so a commentary is never counted as independent support for its own primary paper."""
+    papers = [i for i in items if i["kind"] in ("paper", "preprint")]
+    for c in papers:
+        types = set(c.get("types") or [])
+        text = c.get("abstract", "")
+        if not (types & COMMENT_TYPES or re.match(r"\s*(In this issue|In this edition|Commentary on)", text, re.I)):
+            continue
+        c["commentary"] = True
+        for m in re.finditer(r"\b([A-Z][A-Za-z'\-]+) et al\.?", text):
+            name = m.group(1).lower()
+            hit = next((p for p in papers if p is not c and not p.get("commentary")
+                        and (p.get("authors") or "").lower().startswith(name)
+                        and (not c.get("venue") or p.get("venue") == c.get("venue"))), None)
+            if hit:
+                c["comments_on"] = hit["sid"]
+                break
+
+
 def write(cfg, items, status, start, end, out):
     out.mkdir(parents=True, exist_ok=True)
     kind_order = {"trial": 0, "eu_trial": 1, "paper": 2, "preprint": 3, "sec": 4, "press": 5, "news": 6}
     items.sort(key=lambda i: (kind_order[i["kind"]], -len(i["matched"]), i["title"]))
     for n, it in enumerate(items, 1):
         it["sid"] = f"S{n}"
+    link_commentaries(items)
     head = f"{cfg['name']} · {start} to {end}"
     idx = [f"# Index: {head}", f"Source status: {status}", "",
            "| ID | Type | Date | Matched terms | Title | Sponsor/venue |", "|---|---|---|---|---|---|"]
@@ -543,6 +629,8 @@ def write(cfg, items, status, start, end, out):
         L += ["", f"### [{i['sid']}] {i['title']}",
               f"- Type: {i['kind']}" + "".join(f" · {x}" for x in (i.get("venue"), i.get("date"), i.get("authors")) if x),
               f"- Link: {i['url']}" + (f" · DOI: {i['doi']}" if i.get("doi") else ""), f"- Matched terms: {label(i)}"]
+        if i.get("commentary"):
+            L.append(f"- Commentary or editorial" + (f" on [{i['comments_on']}]: cite that paper for its findings" if i.get("comments_on") else ""))
         if i["kind"] == "trial":
             L += [f"- Trial: {i['id']} · {', '.join(i['phases']) or 'phase n/a'} · {i['status']} · n={i['enrollment'] or '?'} · "
                   f"start {i['start'] or '?'} · primary completion {i['primary_completion'] or '?'}",
@@ -727,6 +815,27 @@ def fill_last_mention(md, items):
     return "\n".join(lines) + ("\n" if md.endswith("\n") else "")
 
 
+def add_not_cited(brief, items, scr):
+    """Make sure the report lists relevant sources the briefing does not cite, whichever way the briefing was written."""
+    if not brief or not scr or "Relevant sources not cited" in brief or "No material changes since the last scan" in brief:
+        return brief
+    cut = brief.find("## Screened sources")
+    story = brief if cut < 0 else brief[:cut]
+    cited = set(re.findall(r"S\d+", story))
+    missed = [i for i in items if (scr.get(i["sid"]) or {}).get("rel", 0) >= 2 and i["sid"] not in cited]
+    if not missed:
+        return brief
+    missed.sort(key=lambda i: (-scr[i["sid"]]["rel"], int(i["sid"][1:])))
+    sec = ["## Relevant sources not cited above",
+           f"{len(missed)} sources were screened as relevant but the briefing does not cite them. They are in the source list "
+           "below; check them before relying on the briefing alone.", ""]
+    sec += [f"- [{i['sid']}] {i['title'][:110]}" + (f": {scr[i['sid']]['note']}" if scr[i["sid"]].get("note") else "") for i in missed[:40]]
+    if len(missed) > 40:
+        sec += ["", f"{len(missed) - 40} more: " + ", ".join(i["sid"] for i in missed[40:])]
+    block = "\n".join(sec) + "\n\n"
+    return story.rstrip() + "\n\n" + block + (brief[cut:] if cut >= 0 else "")
+
+
 def render(out, hub="", title="", abstracts=True, heading=""):
     """Write out/report.html. abstracts=False leaves publisher abstracts out, e.g. for a page posted publicly.
     heading replaces the profile name as the page heading, e.g. for a one-off year in review."""
@@ -736,6 +845,8 @@ def render(out, hub="", title="", abstracts=True, heading=""):
     for i in items:  # scans made before profiles became flat keyword lists stored matches by group
         if isinstance(i.get("matched"), dict):
             i["matched"] = [t for g in ("targets", "drugs", "mechanisms") for t in i["matched"].get(g, [])]
+    if not any("commentary" in i for i in items):
+        link_commentaries(items)
     brief = (out / "briefing.md").read_text() if (out / "briefing.md").exists() else ""
     if brief:
         filled = fill_last_mention(brief, items)
@@ -755,7 +866,9 @@ def render(out, hub="", title="", abstracts=True, heading=""):
             meta = i["authors"]
         rows.append({"s": i["sid"], "k": i["kind"], "d": i.get("date", ""), "t": i["title"], "u": i["url"],
                      "v": i.get("venue", ""), "m": label(i), "r": rel if rel is not None else (0 if scr else None),
-                     "n": sc.get("note", ""), "a": i.get("abstract", "")[:6000] if abstracts else "", "x": meta})
+                     "n": sc.get("note", ""), "a": i.get("abstract", "")[:6000] if abstracts else "", "x": meta,
+                     "l": i.get("link"), "c": (i.get("comments_on") or "yes") if i.get("commentary") else "",
+                     "y": sc.get("type", ""), "lim": sc.get("limits", "")})
     payload = {"name": cfg.get("name", "Landscape scan"), "window": data["window"], "status": data["status"],
                "keywords": cfg["keywords"], "hub": hub if hub.startswith("https://") else "", "rows": rows,
                "screened": bool(scr), "generated": date.today().isoformat(), "repo": REPO_URL,
@@ -765,6 +878,7 @@ def render(out, hub="", title="", abstracts=True, heading=""):
     page = REPORT_HTML.replace("<title>__TITLE__ report</title>", "<title>" + md_inline(title or cfg.get("name", "Landscape scan") + " report") + "</title>")
     page = page.replace("__TITLE__", md_inline(heading or cfg.get("name", "Landscape scan")))
     page = page.replace("__REPO__", REPO_URL).replace("__VERSION__", __version__)
+    brief = add_not_cited(brief, items, scr)
     tables = []
     brief_html = md_to_html(brief, {i["sid"]: i["url"] for i in items}, tables) if brief else "<p class=quiet>No briefing was written for this scan.</p>"
     payload["tables"] = tables
@@ -814,7 +928,7 @@ h1{font:600 clamp(30px,4vw,40px)/1.1 "Space Grotesk",Inter,sans-serif;letter-spa
 .kw li{font-size:12px;background:#1E293B;color:#E0F2FE;border:1px solid #334155;border-radius:999px;padding:3px 10px}
 .status{margin:12px 0 0;font-size:14px;color:#86EFAC}
 .status.bad{color:#FCA5A5;font-weight:500}
-.status.bad a{color:#FCA5A5}
+.status.bad a{color:#FCA5A5}.status .cite{background:#7F1D1D;color:#FEE2E2}
 .layout{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;padding-top:28px;padding-bottom:56px}
 .toc{flex:0 1 168px;max-width:168px;margin-left:-10px;position:sticky;top:16px;display:flex;flex-direction:column;gap:2px;font-size:14px}
 .toc .lbl{color:var(--mute);padding:0 10px 8px}
@@ -873,7 +987,7 @@ select{font:15px Inter,sans-serif;color:var(--ink);background:#fff;border:1px so
 .src:target{background:#EFF6FF}
 .sid{font:600 14px Inter,sans-serif;color:var(--accent)}
 .sid em{display:block;font-style:normal;font-weight:600;font-size:12px;margin-top:4px;padding:2px 8px;border-radius:6px;width:max-content}
-.g3{background:#DCFCE7;color:#166534}.g2{background:#DBEAFE;color:#1E40AF}.g1,.g0{background:#F3F4F6;color:#374151}
+.gb{background:#FEE2E2;color:#B91C1C}.g3{background:#DCFCE7;color:#166534}.g2{background:#DBEAFE;color:#1E40AF}.g1,.g0{background:#F3F4F6;color:#374151}
 .t{font-weight:500;font-size:16px;text-decoration:none;color:var(--ink);line-height:1.4}
 .t:hover,.t:focus-visible{color:var(--accent);text-decoration:underline}
 .t::after{content:" ↗";color:var(--mute);font-weight:400}
@@ -960,10 +1074,19 @@ const n3 = rows.filter(r => r.r === 3).length, n2 = rows.filter(r => r.r === 2).
 const statusOk = v => /^ok|^skipped/.test(String(v));
 const failed = Object.entries(D.status).filter(([, v]) => !statusOk(v)).map(([k]) => k);
 const total = Object.keys(D.status).length, sEl = document.getElementById("srcstatus");
-if (!failed.length) sEl.textContent = `All ${total} sources verified`;
-else { sEl.classList.add("bad");
-  sEl.innerHTML = `${total - failed.length} of ${total} sources verified · ` + failed.map(k => { const [name, url] = SRC[k] || [k, ""];
-    return `${esc(name)} not reached, so it is missing from this report` + (url ? `: <a href="${esc(url)}" target="_blank" rel="noopener">check it directly ↗</a>` : ""); }).join("; "); }
+const checked = rows.filter(r => r.l), lok = checked.filter(r => r.l === "ok").length;
+const broken = checked.filter(r => r.l === "broken"), lun = checked.filter(r => r.l === "unchecked").length;
+const parts = [];
+parts.push(failed.length ? `${total - failed.length} of ${total} databases searched · ` + failed.map(k => { const [name, url] = SRC[k] || [k, ""];
+    return `${esc(name)} not reached, so it is missing from this report` + (url ? `: <a href="${esc(url)}" target="_blank" rel="noopener">check it directly ↗</a>` : ""); }).join("; ")
+  : `All ${total} databases searched`);
+if (checked.length) {
+  parts.push(`${lok} of ${rows.length} source links verified`);
+  if (broken.length) parts.push(`${broken.length} broken: ` + broken.map(r => `<a class="cite" href="#${esc(r.s)}" data-s="${esc(r.s)}">${esc(r.s)}</a>`).join(""));
+  if (lun) parts.push(`${lun} couldn't be checked automatically (the site blocked the check)`);
+} else parts.push("source links not checked in this scan");
+sEl.innerHTML = parts.join(" · ");
+if (failed.length || broken.length) sEl.classList.add("bad");
 const nTrials = rows.filter(r => r.k.includes("trial")).length, nPapers = rows.filter(r => r.k === "paper" || r.k === "preprint").length;
 const figs = D.screened ? [[n3, "Directly relevant"], [n2, "Context"], [nTrials, "Trials"], [nPapers, "Papers & preprints"]]
   : [[rows.length, "Sources found"], [nTrials, "Trials"], [nPapers, "Papers & preprints"], [kinds.length, "Source types"]];
@@ -998,8 +1121,9 @@ function card(r) {
   const u = safe(r.u), relTag = r.r != null && D.screened ? `<em class="g${r.r}">${TAG[r.r]}</em>` : "";
   const title = u ? `<a class="t" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(r.t)}</a>` : `<span class="t">${esc(r.t)}</span>`;
   const meta = [KIND[r.k], r.v, r.d, r.x].filter(Boolean).map(esc).join(" · ");
-  return `<article class="src" id="${esc(r.s)}"><div class="sid">${esc(r.s)}${relTag}</div><div>${title}
-    <div class="meta">${meta}</div>${r.n ? `<div class="note">${esc(r.n)}</div>` : ""}
+  const lt = (r.l === "broken" ? `<em class="gb">Link broken</em>` : "") + (r.c ? `<em class="g1">${r.c === "yes" ? "Commentary" : "Comment on " + esc(r.c)}</em>` : "");
+  return `<article class="src" id="${esc(r.s)}"><div class="sid">${esc(r.s)}${relTag}${lt}</div><div>${title}
+    <div class="meta">${meta}${r.y ? " · " + esc(r.y) : ""}</div>${r.n ? `<div class="note">${esc(r.n)}</div>` : ""}${r.lim ? `<div class="mt">Limits: ${esc(r.lim)}</div>` : ""}
     <div class="mt">Matched: ${esc(r.m)}</div>${r.a ? `<details><summary>${r.k === "sec" ? "Filing excerpts" : r.k.includes("trial") ? "Summary" : "Abstract"}</summary><p>${esc(r.a)}</p></details>` : ""}</div></article>`;
 }
 
@@ -1113,6 +1237,9 @@ def scan(cfg, days, out, log=None):
     items = [i for i in items if not (i["kind"] == "news" and news_key(i["title"]) in press_keys)]
     for it in items:
         it["matched"] = matched(cfg, it)
+    if cfg.get("verify_links", True):
+        log("Checking every source's link")
+        verify_links(items, cfg, log)
     write(cfg, items, status, start, end, Path(out))
     return {"out": str(out), "window": [start, end], "status": status, "total": len(items),
             "with_keyword_in_text": sum(1 for i in items if i["matched"])}
@@ -1123,6 +1250,7 @@ def main(argv=None):
     sub.add_parser("check")
     s = sub.add_parser("scan"); s.add_argument("--config", required=True); s.add_argument("--days", type=int, default=60)
     s.add_argument("--out", required=True)
+    s.add_argument("--no-link-check", action="store_true", help="skip opening every source's link")
     sh = sub.add_parser("show"); sh.add_argument("--out", required=True); sh.add_argument("ids", nargs="+")
     rd = sub.add_parser("render"); rd.add_argument("--out", required=True); rd.add_argument("--hub", default=""); rd.add_argument("--title", default="")
     rd.add_argument("--heading", default="", help="page heading in place of the profile name")
@@ -1155,6 +1283,8 @@ def main(argv=None):
         print(render(Path(a.out), a.hub, a.title, abstracts=not a.no_abstracts, heading=a.heading)); return
 
     cfg = json.loads(Path(a.config).read_text())
+    if a.no_link_check:
+        cfg["verify_links"] = False
     print(json.dumps(scan(cfg, a.days, Path(a.out)), indent=1))
 
 

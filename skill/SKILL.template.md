@@ -102,7 +102,8 @@ If a source shows FAILED in the summary, continue with the rest and mention it i
 
 ## Step 5: Screen for relevance
 
-Read `index.md` first. Then read abstracts in batches for anything you can't judge from the title:
+Read `index.md` first. Then read the abstracts in batches. **Never score a paper, preprint or filing on its title
+alone**: a finding about a keyword is often only in the results or conclusions.
 ```bash
 python3 /tmp/sourcesweep.py show --out "$OUT" S3 S7 S12
 ```
@@ -114,21 +115,45 @@ Score every source against the profile's `context` (or the user's evident scope)
 - **1, tangential:** mentions a keyword in passing
 - **0, off-topic**
 
+Judge by the findings and conclusions: a source whose results or conclusions report something about a keyword is at
+least 2, even if its main topic is something else. Before writing the scores, re-read in full every source you scored
+0 or 1 whose text names a keyword (`grep -il` on `sources.md` helps find them).
+Sources marked "Commentary or editorial on [S#]" are not independent evidence: score them, but cite the primary paper.
+
 Type-specific notes:
 - **sec**: read the excerpts. 8-K decks and 10-Qs often hold the most decision-relevant facts (dropped trials, IND timing, competitor lists). Boilerplate risk-factor mentions are 1
 - **eu_trial**: CTIS status is a numeric code; rely on the last-updated date and title. Flag EU-only trials and ones that differ from the US record
 - **press** items marked "(in article text)" have no abstract; judge them by title and company, and don't state facts that aren't in the title
 
-Give each source scored 2 or 3 a one-sentence note on what it adds. Use only facts in the source.
-Write every score to `$OUT/screening.json`, covering all sources:
+Give each source scored 2 or 3:
+- **note**: one sentence on what it adds;
+- **type**: clinical trial, observational, preclinical, review, commentary, company statement, registry record or news;
+- **limits**: up to 30 words of qualifiers the source itself states that limit its main finding (significant only in a
+  subgroup, a non-significant endpoint, small n, the definition or cutoff used, model system, interim data), or "".
+Use only facts in the source. Write every score to `$OUT/screening.json`, covering all sources:
 ```json
-{"S1": {"rel": 3, "note": "ASPENOVA confirmatory trial"}, "S2": {"rel": 1, "note": ""}}
+{"S1": {"rel": 3, "note": "ASPENOVA confirmatory trial", "type": "registry record", "limits": ""}, "S2": {"rel": 1, "note": ""}}
 ```
 
 ## Step 6: Write the briefing
 
 Report what the sources say and attribute it ("the registry lists...", "the company reported..."). Don't add your own
 scientific interpretation, predictions, rankings of assets or strategic recommendations: the reader draws the conclusions.
+
+Rules for every claim:
+- Keep the qualifiers from **limits**: a subgroup-only result, a non-significant endpoint, the sample size, the
+  definition or cutoff. Leave a finding out rather than state it without the qualifier that changes it.
+- Say what kind of evidence it is when it isn't a clinical result (preclinical, observational, review, company statement).
+- A general claim ("companies", "studies") cites every source in the pack that supports it, or is narrowed to what it cites.
+- When sources complicate or contradict a statement, say so in the same place; when findings point in opposite
+  directions, give the condition that separates them if a source states it, otherwise say they disagree.
+- Cite a commentary's primary paper, not the commentary, for findings.
+- Don't merge different drugs, mechanisms, combinations or definitions into one claim. A source may be cited in more than one section.
+
+**Check before publishing.** Re-read the full text (`show`) of every source the briefing cites and correct any claim
+that is unsupported, drops a stated qualifier, rests a general claim on one source, or merges different things.
+The report adds a "Relevant sources not cited above" list for relevant sources the briefing doesn't cite; after
+`render`, skim it for anything that belongs in the briefing.
 
 Create `briefing.md` in `$OUT`:
 
