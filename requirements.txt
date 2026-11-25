@@ -1,2 +1,2 @@
 # For hosting the app (e.g. Streamlit Community Cloud). The package itself has no dependencies.
-streamlit>=1.40
+streamlit>=1.45

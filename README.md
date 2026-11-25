@@ -7,7 +7,7 @@ screens every source for relevance, and writes a briefing where each claim cites
 (Claudin 18.2, 60 days, 270 sources. Publisher abstracts are left out of the public example.)
 
 Built by **Tegan Anderes / [Anderes Lab Solutions](https://andereslabsolutions.bio)**.
-Licensed under [AGPL-3.0](LICENSE): see [License](#license).
+Licensed under [AGPL-3.0](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/LICENSE): see [License](#license).
 
 ---
 
@@ -31,9 +31,9 @@ All three use the same scanner (`sourcesweep/scanner.py`, Python standard librar
 
 | | Who screens the sources | Needs |
 |---|---|---|
-| **[Claude skill](docs/claude-skill.md)**: ask Claude in your own account | Claude, in your chat | A Claude plan with code execution and web access for files. No API key |
-| **[Web app](docs/app-and-cli.md)** (Streamlit) and **[command line](docs/app-and-cli.md)** | The Anthropic API, with your key | Python 3.10+. Without a key you get keyword scores |
-| **[Scheduled GitHub runs](docs/scheduling.md)** | The Anthropic API, with your key | A fork of this repo. Change tracking between runs |
+| **[Claude skill](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/docs/claude-skill.md)**: ask Claude in your own account | Claude, in your chat | A Claude plan with code execution and web access for files. No API key |
+| **[Web app](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/docs/app-and-cli.md)** (Streamlit) and **[command line](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/docs/app-and-cli.md)** | The Anthropic API, with your key | Python 3.10+. Without a key you get keyword scores |
+| **[Scheduled GitHub runs](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/docs/scheduling.md)** | The Anthropic API, with your key | A fork of this repo. Change tracking between runs |
 
 ### Quick start (command line)
 
@@ -48,8 +48,8 @@ sourcesweep run profiles/claudin-18-2      # report in profiles/claudin-18-2/rep
 
 ### Quick start (Claude skill)
 
-Download `sourcesweep.zip` from the [latest release](../../releases/latest), upload it
-under **Settings → Capabilities → Skills**, allow the source websites (see [the skill guide](docs/claude-skill.md)),
+Download `sourcesweep.zip` from the [latest release](https://github.com/anderes-lab-solutions/sourcesweep/releases/latest), upload it
+under **Settings → Capabilities → Skills**, allow the source websites (see [the skill guide](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/docs/claude-skill.md)),
 then ask:
 
 > Run a SourceSweep scan for a new profile called "KRAS G12D" using exactly these keywords:
@@ -73,7 +73,7 @@ A profile is a folder in `profiles/` with a `profile.json`:
 The scan searches **only your keywords**. Nothing adds drugs or synonyms for you. Good keywords
 are specific: gene symbols, protein names, mechanisms ("CDK2 degrader"), drug code names. Avoid
 single common words. Optional keys: `skip_sources` (for example `["sec", "press"]`) and `press_sites`
-(replaces the default trade-press domains). See [how it works](docs/how-it-works.md).
+(replaces the default trade-press domains). See [how it works](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/docs/how-it-works.md).
 
 ## Sources
 
@@ -92,7 +92,7 @@ trade-press list is configurable, and the trial registries can be skipped for no
 | Trade press | Google News, site-restricted | Fierce, Endpoints, BioSpace, STAT, BioPharma Dive, wires |
 | News | Google News | Title-matched; duplicates of trade press dropped |
 
-All are public and keyless, searched on a best-effort basis. Read the [data source notes](docs/data-sources.md)
+All are public and keyless, searched on a best-effort basis. Read the [data source notes](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/docs/data-sources.md)
 for coverage gaps and terms of use. Patents and conference abstracts are not covered: neither has an
 open, keyless API.
 
@@ -123,20 +123,20 @@ streamlit run app.py
 ```
 
 The skill embeds the scanner, so `tools/build_skill.py --check` runs in CI to keep them in step.
-Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions are welcome: see [CONTRIBUTING.md](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/CONTRIBUTING.md).
 
 ## License
 
-SourceSweep is free software under the [GNU Affero General Public License v3.0 only](LICENSE).
+SourceSweep is free software under the [GNU Affero General Public License v3.0 only](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/LICENSE).
 You can use, study, change and share it. If you distribute it, or run a modified version as a
 network service, you must make your source available under the same license. Copies and
-modified versions must keep the [NOTICE](NOTICE) file and the author attribution it describes.
+modified versions must keep the [NOTICE](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/NOTICE) file and the author attribution it describes.
 A commercial license is available for organizations that can't use AGPL software.
 
 ## Credit and citation
 
 If you use or build on SourceSweep, please cite it (GitHub shows a "Cite this repository"
-button from [CITATION.cff](CITATION.cff)).
+button from [CITATION.cff](https://github.com/anderes-lab-solutions/sourcesweep/blob/main/CITATION.cff)).
 
 For custom scans, recurring landscape briefings or help setting this up for your team, contact
 [Anderes Lab Solutions](https://andereslabsolutions.bio).

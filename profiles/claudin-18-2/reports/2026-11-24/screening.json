@@ -1,0 +1,1082 @@
+{
+ "S1": {
+  "rel": 2,
+  "note": "Non-invasive CLDN18.2 detection study"
+ },
+ "S2": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S3": {
+  "rel": 3,
+  "note": "ASP2138 (CLDN18.2\u00d7CD3) perioperative study"
+ },
+ "S4": {
+  "rel": 3,
+  "note": "ASP2138 alone or in combination"
+ },
+ "S5": {
+  "rel": 3,
+  "note": "ASP2138 + chemo + pembrolizumab"
+ },
+ "S6": {
+  "rel": 3,
+  "note": "ATG-022 (Antengene) randomized study"
+ },
+ "S7": {
+  "rel": 3,
+  "note": "Zolbetuximab in gastric cancer (Astellas)"
+ },
+ "S8": {
+  "rel": 3,
+  "note": "Zolbetuximab in pancreatic cancer"
+ },
+ "S9": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S10": {
+  "rel": 3,
+  "note": "AZD0901 (sonesitatug vedotin) Phase 3 vs investigator's choice"
+ },
+ "S11": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S12": {
+  "rel": 2,
+  "note": "AI model to aid CLDN18.2 expression diagnosis"
+ },
+ "S13": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S14": {
+  "rel": 2,
+  "note": "CLDN18.2-targeted PET imaging"
+ },
+ "S15": {
+  "rel": 1,
+  "note": ""
+ },
+ "S16": {
+  "rel": 1,
+  "note": ""
+ },
+ "S17": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S18": {
+  "rel": 3,
+  "note": "Givastomig + nivolumab + chemo"
+ },
+ "S19": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S20": {
+  "rel": 3,
+  "note": "SHR-A1904 (Hengrui ADC) vs investigator's choice"
+ },
+ "S21": {
+  "rel": 3,
+  "note": "Sonesitatug vedotin + capecitabine \u00b1 rilvegostomig"
+ },
+ "S22": {
+  "rel": 3,
+  "note": "AZD5863 Phase 1"
+ },
+ "S23": {
+  "rel": 3,
+  "note": "TAC T-cells (TACTIC-3)"
+ },
+ "S24": {
+  "rel": 3,
+  "note": "XNW27011 (Astellas)"
+ },
+ "S25": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S26": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S27": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S28": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S29": {
+  "rel": 3,
+  "note": "Phase 3 in CLDN18.2+ gastric cancer (Immunofoco)"
+ },
+ "S30": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S31": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S32": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S33": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S34": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S35": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S36": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S37": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S38": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S39": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S40": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S41": {
+  "rel": 1,
+  "note": ""
+ },
+ "S42": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S43": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S44": {
+  "rel": 1,
+  "note": ""
+ },
+ "S45": {
+  "rel": 3,
+  "note": "IBI343 neoadjuvant in pancreatic cancer"
+ },
+ "S46": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S47": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S48": {
+  "rel": 3,
+  "note": "IBI343 combinations (Innovent)"
+ },
+ "S49": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S50": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S51": {
+  "rel": 3,
+  "note": "JS107 vs investigator's choice (Junshi)"
+ },
+ "S52": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S53": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S54": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S55": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S56": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S57": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S58": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S59": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S60": {
+  "rel": 1,
+  "note": ""
+ },
+ "S61": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S62": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S63": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S64": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S65": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S66": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S67": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S68": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S69": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S70": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S71": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S72": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S73": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S74": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S75": {
+  "rel": 3,
+  "note": "CT041 (satri-cel) CAR-T"
+ },
+ "S76": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S77": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S78": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S79": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S80": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S81": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S82": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S83": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S84": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S85": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S86": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S87": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S88": {
+  "rel": 1,
+  "note": ""
+ },
+ "S89": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S90": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S91": {
+  "rel": 1,
+  "note": ""
+ },
+ "S92": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S93": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S94": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S95": {
+  "rel": 0,
+  "note": ""
+ },
+ "S96": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S97": {
+  "rel": 3,
+  "note": "BDC-4182 ISAC first-in-human (Bolt)"
+ },
+ "S98": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S99": {
+  "rel": 3,
+  "note": "ASP546C (Astellas)"
+ },
+ "S100": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S101": {
+  "rel": 3,
+  "note": "SKB315 (Kelun)"
+ },
+ "S102": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S103": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S104": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S105": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S106": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S107": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S108": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S109": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S110": {
+  "rel": 3,
+  "note": "TORL-2-307-ADC first-in-human"
+ },
+ "S111": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S112": {
+  "rel": 0,
+  "note": ""
+ },
+ "S113": {
+  "rel": 0,
+  "note": ""
+ },
+ "S114": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S115": {
+  "rel": 0,
+  "note": ""
+ },
+ "S116": {
+  "rel": 2,
+  "note": "Trial touching CLDN18.2 (imaging, combination or multi-target)"
+ },
+ "S117": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S118": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S119": {
+  "rel": 0,
+  "note": ""
+ },
+ "S120": {
+  "rel": 3,
+  "note": "Spevatamig (PT886) (Phanes)"
+ },
+ "S121": {
+  "rel": 3,
+  "note": "CLDN18.2-directed therapy trial"
+ },
+ "S122": {
+  "rel": 0,
+  "note": ""
+ },
+ "S123": {
+  "rel": 3,
+  "note": "EU trial of a CLDN18.2-directed therapy"
+ },
+ "S124": {
+  "rel": 3,
+  "note": "EU trial of a CLDN18.2-directed therapy"
+ },
+ "S125": {
+  "rel": 3,
+  "note": "EU trial of a CLDN18.2-directed therapy"
+ },
+ "S126": {
+  "rel": 3,
+  "note": "EU: AZD0901 Phase 3"
+ },
+ "S127": {
+  "rel": 3,
+  "note": "EU trial of a CLDN18.2-directed therapy"
+ },
+ "S128": {
+  "rel": 3,
+  "note": "EU trial of a CLDN18.2-directed therapy"
+ },
+ "S129": {
+  "rel": 3,
+  "note": "EU: sonesitatug vedotin Phase 3 combination"
+ },
+ "S130": {
+  "rel": 1,
+  "note": ""
+ },
+ "S131": {
+  "rel": 3,
+  "note": "EU: zolbetuximab + pembrolizumab Phase 3"
+ },
+ "S132": {
+  "rel": 3,
+  "note": "EU trial of a CLDN18.2-directed therapy"
+ },
+ "S133": {
+  "rel": 3,
+  "note": "Review of CLDN18.2 therapies in pancreatic cancer"
+ },
+ "S134": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S135": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S136": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S137": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S138": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S139": {
+  "rel": 3,
+  "note": "CLDN18.2 status shifts after therapy in 155 paired GC/EGJC samples; supports re-testing"
+ },
+ "S140": {
+  "rel": 3,
+  "note": "CLDN18.2 positivity fell after chemo in PDAC (41.9% to 24.3%)"
+ },
+ "S141": {
+  "rel": 3,
+  "note": "Circulating EV proteins track and interfere with CLDN18.2 CAR-T/antibody efficacy"
+ },
+ "S142": {
+  "rel": 1,
+  "note": ""
+ },
+ "S143": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S144": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S145": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S146": {
+  "rel": 3,
+  "note": "Review of resistance to CLDN18.2 therapy"
+ },
+ "S147": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S148": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S149": {
+  "rel": 1,
+  "note": ""
+ },
+ "S150": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S151": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S152": {
+  "rel": 1,
+  "note": ""
+ },
+ "S153": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S154": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S155": {
+  "rel": 3,
+  "note": "Cancer Discovery news: CLDN18.2 ADCs in stomach cancer"
+ },
+ "S156": {
+  "rel": 3,
+  "note": "Regional variability of CLDN18.2 in early GC"
+ },
+ "S157": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S158": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S159": {
+  "rel": 3,
+  "note": "Substantial interobserver agreement on zolbetuximab eligibility; weak staining varies most"
+ },
+ "S160": {
+  "rel": 3,
+  "note": "Comparison of CLDN18.2 regimens"
+ },
+ "S161": {
+  "rel": 1,
+  "note": ""
+ },
+ "S162": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S163": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S164": {
+  "rel": 2,
+  "note": "Deep learning predicts CLDN18.2 status from slides"
+ },
+ "S165": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S166": {
+  "rel": 1,
+  "note": ""
+ },
+ "S167": {
+  "rel": 3,
+  "note": "Managing zolbetuximab nausea/vomiting"
+ },
+ "S168": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S169": {
+  "rel": 1,
+  "note": ""
+ },
+ "S170": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S171": {
+  "rel": 1,
+  "note": ""
+ },
+ "S172": {
+  "rel": 1,
+  "note": ""
+ },
+ "S173": {
+  "rel": 1,
+  "note": ""
+ },
+ "S174": {
+  "rel": 1,
+  "note": ""
+ },
+ "S175": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S176": {
+  "rel": 1,
+  "note": ""
+ },
+ "S177": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S178": {
+  "rel": 1,
+  "note": ""
+ },
+ "S179": {
+  "rel": 1,
+  "note": ""
+ },
+ "S180": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S181": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S182": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S183": {
+  "rel": 1,
+  "note": ""
+ },
+ "S184": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S185": {
+  "rel": 1,
+  "note": ""
+ },
+ "S186": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S187": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S188": {
+  "rel": 1,
+  "note": ""
+ },
+ "S189": {
+  "rel": 2,
+  "note": "Japan survey: 34.6% of sites test CLDN18 in-house"
+ },
+ "S190": {
+  "rel": 1,
+  "note": ""
+ },
+ "S191": {
+  "rel": 1,
+  "note": ""
+ },
+ "S192": {
+  "rel": 1,
+  "note": ""
+ },
+ "S193": {
+  "rel": 1,
+  "note": ""
+ },
+ "S194": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S195": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S196": {
+  "rel": 1,
+  "note": ""
+ },
+ "S197": {
+  "rel": 1,
+  "note": ""
+ },
+ "S198": {
+  "rel": 1,
+  "note": ""
+ },
+ "S199": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S200": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S201": {
+  "rel": 1,
+  "note": ""
+ },
+ "S202": {
+  "rel": 2,
+  "note": "Context: GI oncology, CAR-T or biomarker"
+ },
+ "S203": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S204": {
+  "rel": 3,
+  "note": "CLDN18.2 therapy or biomarker paper"
+ },
+ "S205": {
+  "rel": 3,
+  "note": "Binding mechanisms of therapeutic anti-CLDN18.2 antibodies"
+ },
+ "S206": {
+  "rel": 1,
+  "note": ""
+ },
+ "S207": {
+  "rel": 1,
+  "note": ""
+ },
+ "S208": {
+  "rel": 3,
+  "note": "AstraZeneca $2B Summit investment; sone-ve + ivonescimab GI trials"
+ },
+ "S209": {
+  "rel": 3,
+  "note": "NovaBridge: givastomig leads its portfolio"
+ },
+ "S210": {
+  "rel": 3,
+  "note": "Xencor: Astellas ASP2138 uses XmAb 2+1 format"
+ },
+ "S211": {
+  "rel": 2,
+  "note": "Filing that mentions CLDN18.2 in passing"
+ },
+ "S212": {
+  "rel": 3,
+  "note": "Summit: sone-ve + ivonescimab plans"
+ },
+ "S213": {
+  "rel": 2,
+  "note": "Filing that mentions CLDN18.2 in passing"
+ },
+ "S214": {
+  "rel": 1,
+  "note": ""
+ },
+ "S215": {
+  "rel": 3,
+  "note": "Bolt: BDC-4182 Phase 1/2 to complete by end of 2026"
+ },
+ "S216": {
+  "rel": 2,
+  "note": "Filing that mentions CLDN18.2 in passing"
+ },
+ "S217": {
+  "rel": 2,
+  "note": "Filing that mentions CLDN18.2 in passing"
+ },
+ "S218": {
+  "rel": 3,
+  "note": "NovaBridge: mature Phase 1b givastomig data at ESMO"
+ },
+ "S219": {
+  "rel": 2,
+  "note": "Filing that mentions CLDN18.2 in passing"
+ },
+ "S220": {
+  "rel": 2,
+  "note": "Filing that mentions CLDN18.2 in passing"
+ },
+ "S221": {
+  "rel": 2,
+  "note": "Filing that mentions CLDN18.2 in passing"
+ },
+ "S222": {
+  "rel": 1,
+  "note": ""
+ },
+ "S223": {
+  "rel": 1,
+  "note": ""
+ },
+ "S224": {
+  "rel": 1,
+  "note": ""
+ },
+ "S225": {
+  "rel": 2,
+  "note": "Tempus/Personalis deal lists a CLDN18 biomarker assay"
+ },
+ "S226": {
+  "rel": 2,
+  "note": "Filing that mentions CLDN18.2 in passing"
+ },
+ "S227": {
+  "rel": 3,
+  "note": "Innovent IBI343 (arcotatug tavatecan) Phase 3 at ESMO"
+ },
+ "S228": {
+  "rel": 3,
+  "note": "Company news on a CLDN18.2 program"
+ },
+ "S229": {
+  "rel": 3,
+  "note": "Immuneering\u2013Astellas CLDN18.2 clinical collaboration"
+ },
+ "S230": {
+  "rel": 3,
+  "note": "Sone-ve US Priority Review, 2L+ gastric"
+ },
+ "S231": {
+  "rel": 3,
+  "note": "CLARITY-Gastric01: sone-ve cut risk of death by 42% (headline)"
+ },
+ "S232": {
+  "rel": 3,
+  "note": "Antengene ATG-022 ESMO data"
+ },
+ "S233": {
+  "rel": 3,
+  "note": "Company news on a CLDN18.2 program"
+ },
+ "S234": {
+  "rel": 2,
+  "note": "Adjacent company news"
+ },
+ "S235": {
+  "rel": 3,
+  "note": "Company news on a CLDN18.2 program"
+ },
+ "S236": {
+  "rel": 3,
+  "note": "Satri-cel added to China commercial insurance innovative drug list"
+ },
+ "S237": {
+  "rel": 3,
+  "note": "AstraZeneca defends Phase 3 data despite PFS questions"
+ },
+ "S238": {
+  "rel": 3,
+  "note": "Takeda's $1.2B Innovent deal: ADC Phase 3 details"
+ },
+ "S239": {
+  "rel": 0,
+  "note": ""
+ },
+ "S240": {
+  "rel": 3,
+  "note": "Company news on a CLDN18.2 program"
+ },
+ "S241": {
+  "rel": 3,
+  "note": "Givastomig positioned for registrational development"
+ },
+ "S242": {
+  "rel": 2,
+  "note": "Adjacent company news"
+ },
+ "S243": {
+  "rel": 2,
+  "note": "Adjacent company news"
+ },
+ "S244": {
+  "rel": 3,
+  "note": "Takeda: arcotatug tavatecan (TAK-921) met Phase 3 endpoints (headline)"
+ },
+ "S245": {
+  "rel": 0,
+  "note": ""
+ },
+ "S246": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S247": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S248": {
+  "rel": 3,
+  "note": "Headline cites 53% death-risk cut for AZ's CLDN18.2 ADC"
+ },
+ "S249": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S250": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S251": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S252": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S253": {
+  "rel": 2,
+  "note": "Adjacent news"
+ },
+ "S254": {
+  "rel": 2,
+  "note": "Adjacent news"
+ },
+ "S255": {
+  "rel": 3,
+  "note": "Takeda preparing CLDN18.2 gastric filings"
+ },
+ "S256": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S257": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S258": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S259": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S260": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S261": {
+  "rel": 3,
+  "note": "Canadian real-world evidence on CLDN18.2 testing in practice"
+ },
+ "S262": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S263": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S264": {
+  "rel": 2,
+  "note": "Adjacent news"
+ },
+ "S265": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S266": {
+  "rel": 3,
+  "note": "CLDN18.2 CAR-T peritoneal control in Phase 1 cases"
+ },
+ "S267": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S268": {
+  "rel": 3,
+  "note": "Headline: AZ's CLDN18.2 ADC doubles OS"
+ },
+ "S269": {
+  "rel": 3,
+  "note": "Trade news on CLDN18.2 data or regulation"
+ },
+ "S270": {
+  "rel": 2,
+  "note": "Habitat radiomics predicts CLDN18.2 expression"
+ }
+}

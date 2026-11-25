@@ -43,7 +43,8 @@ def run(cfg, out, days=None, use_ai=True, history_dir=None, progress=print, hub=
 
     summary.update(direct=sum(1 for v in scr.values() if v["rel"] == 3),
                    context=sum(1 for v in scr.values() if v["rel"] == 2),
-                   ai=usage.as_dict() if usage.calls else None, changes=change_summary)
+                   ai=usage.as_dict() if usage.calls else None, changes=change_summary,
+                   ran_at=data.get("generated_at"))
     (out / "run.json").write_text(json.dumps(summary, indent=1))
     return summary
 

@@ -5,7 +5,7 @@ description: "Run a SourceSweep competitive landscape scan (also called a landsc
 
 # SourceSweep™: competitive landscape scan
 
-<!-- Built from https://github.com/anderes-lab-solutions/sourcesweep (v1.0.0). Copyright 2026 Tegan Anderes / Anderes Lab Solutions. GNU AGPL-3.0-only; keep this attribution (see NOTICE). Edit skill/SKILL.template.md and sourcesweep/scanner.py, then run tools/build_skill.py. -->
+<!-- Built from https://github.com/anderes-lab-solutions/sourcesweep (v1.0.1). Copyright 2026 Tegan Anderes / Anderes Lab Solutions. GNU AGPL-3.0-only; keep this attribution (see NOTICE). Edit skill/SKILL.template.md and sourcesweep/scanner.py, then run tools/build_skill.py. -->
 
 Targeted pre-scrape for any set of search keywords. A bundled script searches seven public sources
 over a lookback window (default 60 days). You then screen every source for relevance, write a
@@ -197,7 +197,7 @@ from email.utils import parsedate_to_datetime
 import os
 from pathlib import Path
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 UA_NAME = "sourcesweep"
 REPO_URL = "https://github.com/anderes-lab-solutions/sourcesweep"
 
@@ -531,7 +531,7 @@ def write(cfg, items, status, start, end, out):
                  else f" [{i['phase']}]" if i["kind"] == "eu_trial" else "")
         idx.append(f"| {i['sid']} | {i['kind']} | {i['date']} | {label(i)} | {i['title'].replace('|', '/')}{extra} | {i.get('venue', '')} |")
     (out / "index.md").write_text("\n".join(idx) + "\n")
-    L = [f"# Source pack: {cfg['name']}", f"Window: {start} to {end} · generated {date.today()}", "",
+    L = [f"# Source pack: {cfg['name']}", f"Window: {start} to {end} · generated {date.today()} with SourceSweep ({REPO_URL})", "",
          "## How to use this file",
          "Pre-screened US/EU clinical trials, papers, preprints, SEC filings, trade press and news with abstracts and links. Answer only from these "
          "sources and cite IDs like [S12]. Abstracts belong to their publishers; follow links for full text.", "",
@@ -751,6 +751,7 @@ def render(out, hub="", title="", abstracts=True):
                "days": (date.fromisoformat(data["window"][1]) - date.fromisoformat(data["window"][0])).days}
     page = REPORT_HTML.replace("<title>__TITLE__ report</title>", "<title>" + md_inline(title or cfg.get("name", "Landscape scan") + " report") + "</title>")
     page = page.replace("__TITLE__", md_inline(cfg.get("name", "Landscape scan")))
+    page = page.replace("__REPO__", REPO_URL).replace("__VERSION__", __version__)
     tables = []
     brief_html = md_to_html(brief, {i["sid"]: i["url"] for i in items}, tables) if brief else "<p class=quiet>No briefing was written for this scan.</p>"
     payload["tables"] = tables
@@ -763,6 +764,7 @@ def render(out, hub="", title="", abstracts=True):
 
 REPORT_HTML = r"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="generator" content="SourceSweep __VERSION__ (__REPO__)">
 <title>__TITLE__ report</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -843,11 +845,17 @@ summary{cursor:pointer;color:var(--mute);font-size:14px;min-height:28px}
 details p{white-space:pre-wrap;font-size:14px;color:#ddd0e2;margin:6px 0 0;overflow-wrap:anywhere}
 .quiet{color:var(--mute)}
 footer{color:var(--mute);font-size:13px}
+.made{display:inline-flex;align-items:center;gap:6px;margin:0 0 14px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:var(--mute);text-decoration:none;letter-spacing:.01em}
+.made b{font-weight:600;color:var(--ink)}
+.made:hover,.made:focus-visible{color:var(--ink);border-color:var(--mute)}
+.printmark{display:none}
+@media print{.made{display:none}.printmark{display:block;position:fixed;bottom:0;left:0;right:0;text-align:center;font-size:10px;color:#777;background:#fff;padding:4px 0}}
 @media(max-width:600px){.brief table{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:block;position:relative;border:0;padding:2px 0 2px 7.5em;white-space:normal!important}.stack td::before{content:attr(data-l);position:absolute;left:0;width:7em;color:var(--mute);font-weight:500}.tr{grid-template-columns:6em minmax(0,1fr) 2.5em}.src{grid-template-columns:minmax(0,1fr)}.sid{display:flex;gap:8px;align-items:center}.sid em{margin:0}}
 @media(prefers-reduced-motion:no-preference){.bar i{transition:flex-grow .4s}}
 </style></head><body>
 <div class="light">
 <header class="band"><div class="wrap">
+<a class="made" href="__REPO__" target="_blank" rel="noopener">Made with <b>SourceSweep™</b> ↗</a>
 <h1 id="title">__TITLE__</h1>
 <p class="sub" id="window"></p>
 <ul class="kw" id="kw" aria-label="Keywords searched"></ul>
@@ -873,6 +881,7 @@ __BRIEF__
 </div></section>
 <footer class="band"><div class="wrap" id="foot"></div></footer>
 <div class="toast" id="toast" role="status"></div>
+<div class="printmark">Created with SourceSweep™ · __REPO__</div>
 <script id="data" type="application/json">__DATA__</script>
 <script>
 {

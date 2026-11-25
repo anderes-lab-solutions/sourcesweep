@@ -41,17 +41,41 @@ records the calls and tokens used.
 streamlit run app.py
 ```
 
-Pick a saved profile or type your own keywords, set the lookback, and run. The app shows the
-report and offers downloads (report, source pack, briefing, or everything as a zip). The
-*Saved reports* tab shows reports committed to `profiles/*/reports/`.
+- **Profiles**: one card per saved profile with its keywords, scope, latest scan and buttons to open the
+  latest report, run a fresh scan or download `profile.json`. The newest report is featured at the top.
+  *Add a profile* creates a new one.
+- **One-off scan**: type keywords and run a scan without saving a profile.
+- **History**: every saved report across profiles, newest first.
 
-To host it (for example on Streamlit Community Cloud), add secrets:
+Reports open inside the app with download buttons (report, source pack, briefing, or everything as a zip).
 
-```toml
-ANTHROPIC_API_KEY = "sk-ant-..."      # or leave it out and let visitors paste their own key
-APP_PASSWORD = "..."                  # optional password gate
-SOURCESWEEP_EMAIL = "you@example.com"
+### Host it from your own repo
+
+The app is part of the package, so a private repo of your own profiles can host it with one file,
+`streamlit_app.py`:
+
+```python
+from sourcesweep.webapp import main
+
+main(profiles_dir="profiles", title="Client scans", subtitle="Powered by SourceSweep")
 ```
 
-Each browser session is limited to 10 runs. If you host it with your own key, you pay for every
-visitor's scans, so set a password or leave the key out.
+and a `requirements.txt` containing `sourcesweep[app]` (or a pinned git URL). Reports committed by the
+scheduled workflow to `profiles/<name>/reports/` then show up on the Profiles and History pages.
+
+### Deploy on Streamlit Community Cloud
+
+1. *Create app* → pick the repo, branch `main` and the app file (`app.py` here, `streamlit_app.py` in your own repo).
+2. *Advanced settings* → Python 3.12, and secrets:
+
+   ```toml
+   APP_PASSWORD = "..."                  # recommended for anything private, and if you add your key
+   SOURCESWEEP_EMAIL = "you@example.com"
+   ANTHROPIC_API_KEY = "sk-ant-..."      # optional: without it visitors paste their own key or get keyword scores
+   ```
+3. Deploy. Files the app writes (new profiles, scans run from the app) are temporary on Streamlit Cloud:
+   commit `profile.json` files to the repo, and let the scheduled GitHub workflow produce saved reports.
+
+Each browser session is limited to 10 runs. If you host it with your own key, you pay for every visitor's
+scans, so set a password or leave the key out. Under the AGPL, a hosted copy must offer its users the
+source: the sidebar link does that, so keep it.

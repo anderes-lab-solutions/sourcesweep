@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sourcesweep"
-version = "1.0.0"
+version = "1.0.1"
 description = "SourceSweep: cited competitive landscape scans for biotech. US/EU trials, PubMed, preprints, SEC filings, trade press and news."
 readme = "README.md"
 license = "AGPL-3.0-only"
@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-app = ["streamlit>=1.40"]
+app = ["streamlit>=1.45"]
 dev = ["pytest>=8"]
 
 [project.scripts]

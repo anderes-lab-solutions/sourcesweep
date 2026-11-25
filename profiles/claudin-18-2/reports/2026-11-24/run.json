@@ -1,0 +1,22 @@
+{
+ "out": "profiles/claudin-18-2/reports/2026-11-24",
+ "window": [
+  "2026-09-25",
+  "2026-11-24"
+ ],
+ "status": {
+  "trials": "ok (122)",
+  "eu_trials": "ok (10)",
+  "pubmed": "ok (72)",
+  "preprints": "ok (3)",
+  "sec": "ok (19)",
+  "press": "ok (19)",
+  "news": "ok (29)"
+ },
+ "total": 270,
+ "direct": 161,
+ "context": 63,
+ "ran_at": "2026-11-25T00:40:18+00:00",
+ "ai": null,
+ "changes": null
+}

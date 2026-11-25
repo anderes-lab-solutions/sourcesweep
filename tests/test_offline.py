@@ -130,3 +130,22 @@ def test_example_profile_loads():
 def test_skill_is_built_from_current_scanner():
     r = subprocess.run([sys.executable, str(ROOT / "tools" / "build_skill.py"), "--check"], capture_output=True, text=True)
     assert r.returncode == 0, r.stdout
+
+
+def test_webapp_summaries(tmp_path):
+    pytest.importorskip("streamlit")
+    from sourcesweep import webapp
+    run = tmp_path / "p" / "reports" / "2026-11-24"; run.mkdir(parents=True)
+    (run / "report.html").write_text("<html></html>")
+    (run / "run.json").write_text(json.dumps({"total": 5, "direct": 2, "context": 1, "ran_at": "2026-11-24T10:00:00+00:00"}))
+    (tmp_path / "p" / "profile.json").write_text(json.dumps({"name": "P", "keywords": ["x"]}))
+    profiles = webapp.load_profiles(tmp_path)
+    assert profiles[0]["slug"] == "p"
+    s = webapp.runs_for(profiles[0]["folder"])[0]
+    assert (s["total"], s["direct"], s["context"]) == (5, 2, 1)
+
+
+def test_report_has_watermark(tmp_path):
+    write_pack(tmp_path)
+    html = scanner.render(tmp_path).read_text()
+    assert "Made with <b>SourceSweep" in html and scanner.REPO_URL in html and "__REPO__" not in html
