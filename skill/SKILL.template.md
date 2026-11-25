@@ -127,6 +127,9 @@ Write every score to `$OUT/screening.json`, covering all sources:
 
 ## Step 6: Write the briefing
 
+Report what the sources say and attribute it ("the registry lists...", "the company reported..."). Don't add your own
+scientific interpretation, predictions, rankings of assets or strategic recommendations: the reader draws the conclusions.
+
 Create `briefing.md` in `$OUT`:
 
 ```
@@ -135,7 +138,7 @@ Window: <start> to <end> · <N> sources screened (<n3> directly relevant, <n2> c
 Source status: <any failures>
 
 ## State of the field
-2–3 short paragraphs, max 250 words, every claim cited [S#].
+2–3 short paragraphs, max 250 words, every claim cited [S#]. Lead with what changed, if tracked.
 ## Key assets & companies
 | Asset | Company | Mechanism | Stage | What happened | Last mention |
 |---|---|---|---|---|---|

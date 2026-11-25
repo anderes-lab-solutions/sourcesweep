@@ -413,6 +413,14 @@ def table_csv_rows(head, body, urls):
     return out
 
 
+_NOWRAP = {"last mention", "date", "dates", "id"}
+
+
+def _nw(head, n):
+    """Keep short date/ID columns on one line; every other column wraps."""
+    return ' class="nw"' if n < len(head) and head[n].strip().lower() in _NOWRAP else ""
+
+
 def md_to_html(md, urls=None, tables=None):
     """Small Markdown subset for briefings: headings, paragraphs, bullet and numbered lists, bold, [S#] citations.
     Stops at '## Screened sources', which the report shows as its interactive source list instead."""
@@ -429,7 +437,7 @@ def md_to_html(md, urls=None, tables=None):
                             f'<button type="button" class="tbtn" data-copycsv="{n}">Copy CSV</button></div>')
             html.append('<div class="scroll"><table class="stack"><thead><tr>' + "".join(f"<th>{md_inline(h)}</th>" for h in head) +
                         "</tr></thead><tbody>" + "".join("<tr>" + "".join(
-                            f'<td data-l="{md_inline(head[n]) if n < len(head) else ""}">{md_inline(c)}</td>' for n, c in enumerate(r)) + "</tr>" for r in body) +
+                            f'<td data-l="{md_inline(head[n]) if n < len(head) else ""}"{_nw(head, n)}>{md_inline(c)}</td>' for n, c in enumerate(r)) + "</tr>" for r in body) +
                         "</tbody></table></div>")
         tbl = []
     def flush():
@@ -631,7 +639,7 @@ h4{font:600 17px/1.3 Inter,sans-serif;margin:20px 0 6px}
 .brief th{text-align:left;font-weight:600;color:var(--mute);font-size:13px;border-bottom:2px solid var(--ink);padding:8px 10px 6px;vertical-align:bottom}
 .brief td{border-bottom:1px solid var(--line);padding:10px;vertical-align:top}
 .brief td:first-child{font-weight:600}
-.brief td:last-child{white-space:nowrap}
+.brief td.nw{white-space:nowrap}
 .scroll{overflow-x:auto}
 .tbar{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 8px}
 .tbtn{font:500 14px Inter,sans-serif;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:6px;min-height:36px;padding:0 12px;cursor:pointer}

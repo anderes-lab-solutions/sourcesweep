@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Update briefings lead with "Changes since last scan", above the state of the field.
+- Briefings report and attribute what sources say, with no added interpretation, predictions or recommendations.
+- Report tables: only date and ID columns stay on one line; the last column (e.g. "What happened") now wraps.
+- CI tests on Python 3.14.
+
 ## 1.0.1 (2026-11-25)
 
 - Reports carry a "Made with SourceSweep™" badge linking to this repository, a credit line on printed/PDF pages, and a generator tag.

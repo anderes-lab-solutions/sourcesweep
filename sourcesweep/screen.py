@@ -161,6 +161,9 @@ Window: {window[0]} to {window[1]}.
 {changes}
 Use ONLY the sources below. Cite every claim with source IDs like [S3] or [S3, S8].
 Do not add facts, numbers, dates or drug names that are not in the sources. If the evidence on a point is thin, say so.
+Report what the sources say and attribute it ("the registry lists...", "the company reported..."). Do not add your own
+scientific interpretation, predictions, rankings of assets or strategic recommendations: the reader draws the conclusions.
+If there are changes since the previous scan, open "State of the field" with them.
 
 Reply in markdown with exactly these three sections and nothing else:
 
@@ -201,10 +204,10 @@ def briefing(cfg, items, scr, status, window, story="", changes_md=""):
     if not by_ai:
         L += ["*No AI screening on this run: relevance is a keyword match (2 = keyword in the title, 1 = keyword in the text). "
               "Add an Anthropic API key, or run the scan as a Claude skill, for screened scores and a written briefing.*", ""]
+    if changes_md:  # updates lead with what changed since the last scan
+        L += [changes_md, ""]
     if story:
         L += [story, ""]
-    if changes_md:
-        L += [changes_md, ""]
     L += ["## Screened sources", "| ID | Type | Rel. | Matched | Title | Note |", "|---|---|---|---|---|---|"]
     num = lambda s: int(s[1:])
     by_sid = {i["sid"]: i for i in items}
