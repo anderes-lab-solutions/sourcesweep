@@ -5,7 +5,8 @@
 - New report design: navy header with the SourceSweep mark, profile keywords, window and schedule, and a source status line ("All 7 sources verified", or which source wasn't reached with a link to check it directly). A page menu on the left, figure cards, source mix, then the briefing and source list.
 - "Ask Claude about these sources": downloads the report's source pack, opens a new Claude chat with a starter prompt (also copied to the clipboard).
 - Table export buttons sit beside the table's heading ("Download table (CSV)", "Copy table"); Print / PDF button.
-- Web app: matching palette, logo and type.
+- Web app: matching palette, logo and type; the title no longer sits under Streamlit's top bar.
+- `render --heading` sets the page heading for special runs (e.g. a year in review); the header shows the scan's real window length.
 
 ## 1.1.0 (2026-11-24)
 

@@ -42,9 +42,9 @@ LOGO = ('<svg aria-hidden="true" width="34" height="34" viewBox="0 0 26 26" fill
 CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap');
-.block-container{padding-top:2rem;max-width:1360px}
-.ss-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px}
-.ss-head h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:600;letter-spacing:-.01em;margin:0;padding:0;color:#0F172A}
+.block-container{padding-top:4.5rem;max-width:1360px}
+.ss-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;overflow:visible}
+.ss-head h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;line-height:1.3;font-weight:600;letter-spacing:-.01em;margin:0;padding:0;color:#0F172A}
 .ss-tag{color:#4B5563;font-size:.95rem}
 .ss-label{text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;color:#4B5563;margin:0 0 4px}
 .ss-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}

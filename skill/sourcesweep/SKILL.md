@@ -727,8 +727,9 @@ def fill_last_mention(md, items):
     return "\n".join(lines) + ("\n" if md.endswith("\n") else "")
 
 
-def render(out, hub="", title="", abstracts=True):
-    """Write out/report.html. abstracts=False leaves publisher abstracts out, e.g. for a page posted publicly."""
+def render(out, hub="", title="", abstracts=True, heading=""):
+    """Write out/report.html. abstracts=False leaves publisher abstracts out, e.g. for a page posted publicly.
+    heading replaces the profile name as the page heading, e.g. for a one-off year in review."""
     data = json.loads((out / "sources.json").read_text())
     cfg, items = data["config"], data["items"]
     cfg["keywords"] = normalize_keywords(cfg)
@@ -762,7 +763,7 @@ def render(out, hub="", title="", abstracts=True):
                "days": (date.fromisoformat(data["window"][1]) - date.fromisoformat(data["window"][0])).days,
                "lookback": cfg.get("days"), "cadence": cfg.get("cadence_days")}
     page = REPORT_HTML.replace("<title>__TITLE__ report</title>", "<title>" + md_inline(title or cfg.get("name", "Landscape scan") + " report") + "</title>")
-    page = page.replace("__TITLE__", md_inline(cfg.get("name", "Landscape scan")))
+    page = page.replace("__TITLE__", md_inline(heading or cfg.get("name", "Landscape scan")))
     page = page.replace("__REPO__", REPO_URL).replace("__VERSION__", __version__)
     tables = []
     brief_html = md_to_html(brief, {i["sid"]: i["url"] for i in items}, tables) if brief else "<p class=quiet>No briefing was written for this scan.</p>"
@@ -953,7 +954,7 @@ if (!D.screened) document.getElementById("rel").disabled = true;
 const when = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString("en-US", {month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short"}); };
 document.getElementById("window").textContent = `${D.window[0]} to ${D.window[1]} (${D.days} days) · ${rows.length} sources` + (when(D.ran_at) ? ` · run ${when(D.ran_at)}` : "");
 document.getElementById("kw").innerHTML = D.keywords.map(k => `<li>${esc(k)}</li>`).join("");
-document.getElementById("cadence").textContent = `${D.lookback || D.days}-day window` + (D.cadence ? ` · runs every ${D.cadence} days` : "");
+document.getElementById("cadence").textContent = `${D.days}-day window` + (D.cadence ? ` · runs every ${D.cadence} days` : "");
 const n3 = rows.filter(r => r.r === 3).length, n2 = rows.filter(r => r.r === 2).length;
 const statusOk = v => /^ok|^skipped/.test(String(v));
 const failed = Object.entries(D.status).filter(([, v]) => !statusOk(v)).map(([k]) => k);
@@ -1123,6 +1124,7 @@ def main(argv=None):
     s.add_argument("--out", required=True)
     sh = sub.add_parser("show"); sh.add_argument("--out", required=True); sh.add_argument("ids", nargs="+")
     rd = sub.add_parser("render"); rd.add_argument("--out", required=True); rd.add_argument("--hub", default=""); rd.add_argument("--title", default="")
+    rd.add_argument("--heading", default="", help="page heading in place of the profile name")
     rd.add_argument("--no-abstracts", action="store_true", help="leave publisher abstracts out of the page")
     a = ap.parse_args(argv)
 
@@ -1149,7 +1151,7 @@ def main(argv=None):
         return
 
     if a.cmd == "render":
-        print(render(Path(a.out), a.hub, a.title, abstracts=not a.no_abstracts)); return
+        print(render(Path(a.out), a.hub, a.title, abstracts=not a.no_abstracts, heading=a.heading)); return
 
     cfg = json.loads(Path(a.config).read_text())
     print(json.dumps(scan(cfg, a.days, Path(a.out)), indent=1))
